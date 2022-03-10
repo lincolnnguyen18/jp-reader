@@ -8,6 +8,7 @@ export default {
       language: "ja",
       currentLineText: "",
       backupText: "",
+      loading: false
     }
   },
   // computed: {
@@ -27,13 +28,12 @@ export default {
     async updateCurrentLine() {
       if (this.language == "ja") {
         let line = this.japaneseText[this.currentLine][1].trim()
-        let test = await this.getFurigana(line);
-        console.log(test)
-        // this.currentLineText = test
-        this.$refs.output.innerHTML = test.trim()
+        if (line) {
+          let test = line;
+          console.log(test)
+          this.$refs.output.innerHTML = test.trim()
+        }
       } else {
-        // return this.japaneseText[this.currentLine][0]
-        // this.currentLineText = this.japaneseText[this.currentLine][0]
         this.$refs.output.innerHTML = this.japaneseText[this.currentLine][0].trim()
       }
     },
@@ -66,7 +66,23 @@ export default {
           return -1
         }
         this.japaneseText = await this.translateText(textToTranslate)
-        this.updateCurrentLine()
+        let newJapaneseText = [];
+        for (let i = 0; i < this.japaneseText.length; i++) {
+          let line = this.japaneseText[i]
+          console.log(line[0])
+          console.log(line[1])
+          let newLine = [];
+          newLine.push(line[0].trim())
+          this.getFurigana(line[1].trim()).then(result => {
+            newLine.push(result)
+            newJapaneseText.push(newLine)
+            if (i == this.japaneseText.length - 1) {
+              this.japaneseText = newJapaneseText
+              this.updateCurrentLine()
+              this.loading = false
+            }
+          })
+        }
       }
     },
     async translateText(text) {
@@ -104,11 +120,12 @@ export default {
   mounted() {
     // listen for arrow key right
     document.addEventListener("keydown", async (e) => {
-      if (e.key == "ArrowRight") {
+      if (e.key == "ArrowRight" && !this.loading) {
         if (this.currentLine < this.japaneseText.length - 1) {
           this.currentLine++;
           this.updateCurrentLine()
         } else if (this.backupText != "") {
+          this.loading = true
           this.mode = "input"
           let flag = await this.translate()
           if (flag != -1) {
@@ -117,7 +134,7 @@ export default {
           }
         }
       }
-      if (e.key == "ArrowLeft") {
+      if (e.key == "ArrowLeft" && !this.loading) {
         if (this.currentLine > 0) {
           this.currentLine--;
           this.updateCurrentLine()
