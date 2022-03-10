@@ -1,4 +1,5 @@
 <script>
+import Loading from './components/Loading.vue'
 export default {
   data() {
     return {
@@ -39,6 +40,7 @@ export default {
     },
     async translate() {
       if (this.mode == 'input') {
+        this.loading = true
         this.mode = "output"
         let textToTranslate
         if (this.backupText == "") {
@@ -80,6 +82,11 @@ export default {
               this.japaneseText = newJapaneseText
               this.updateCurrentLine()
               this.loading = false
+              document.getElementById('app').style.justifyContent = "flex-start"
+              // setTimeout(() => {
+              //   console.log('test')
+              //   this.$refs.loading_icon.classList.add("hidden")
+              // }, 10000)
             }
           })
         }
@@ -125,12 +132,12 @@ export default {
           this.currentLine++;
           this.updateCurrentLine()
         } else if (this.backupText != "") {
-          this.loading = true
+          // this.$refs.loading_icon.classList.remove("hidden")
           this.mode = "input"
           let flag = await this.translate()
           if (flag != -1) {
             this.currentLine = 0
-            this.updateCurrentLine()
+            // this.updateCurrentLine()
           }
         }
       }
@@ -141,7 +148,7 @@ export default {
         }
       }
       // space
-      if (e.key == "ArrowUp" || e.key == "ArrowDown") {
+      if ((e.key == "ArrowUp" || e.key == "ArrowDown") && !this.loading) {
         if (this.language == "ja") {
           this.language = "en";
           this.updateCurrentLine();
@@ -156,19 +163,25 @@ export default {
         this.mode = "input";
         this.currentLine = 0;
         this.backupText = "";
+        document.getElementById('app').style.justifyContent = "center"
       }
     });
-  }
+  },
+  components: { Loading }
 }
 </script>
 
 <template>
+  <Loading ref="loading_icon" v-if="loading"></Loading>
   <textarea v-if="mode == 'input'" cols="40" rows="25" v-model="japaneseText" placeholder="Enter Japanese text here"></textarea>
-  <div v-else ref="output" class="output"></div>
+  <div v-else ref="output" class="output" :class="{'hidden': loading}"></div>
   <button class="parse-button" ref="parse_button" @click="translate" v-if="mode == 'input'">Parse</button>
 </template>
 
 <style>
+.hidden {
+  display: none !important;
+}
 html, body {
   height: 100%;
   width: 100%;
@@ -183,6 +196,8 @@ html, body {
   flex-direction: column;
   gap: 14px;
   max-width: 500px;
+  height: 100%;
+  justify-content: center;
 }
 textarea {
   resize: none;
@@ -193,6 +208,8 @@ textarea {
 }
 .output {
   line-height: 2;
+  padding: 60px 0;
+  margin: auto 0;
 }
 .output span {
   border-bottom: 1px solid black;
