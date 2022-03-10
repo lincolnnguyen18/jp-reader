@@ -181,13 +181,13 @@ html, body {
 #app {
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: 14px;
   max-width: 500px;
 }
 textarea {
   resize: none;
   border-radius: 7px;
-  padding: 7px;
+  padding: 16px;
   font-size: 16px;
   font-family: 'Roboto', sans-serif;
 }
@@ -204,7 +204,10 @@ textarea {
   padding: 10px 14px;
   border: none;
   border-radius: 7px;
-  background-color: #b9b9b9;
+  background-color: black;
+  color: white;
+  cursor: pointer;
+  user-select: none;
   font-size: 16px;
 }
 </style>
