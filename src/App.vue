@@ -26,7 +26,7 @@ export default {
   methods: {
     async updateCurrentLine() {
       if (this.language == "ja") {
-        let line = this.japaneseText[this.currentLine][1]
+        let line = this.japaneseText[this.currentLine][1].trim()
         let test = await this.getFurigana(line);
         console.log(test)
         // this.currentLineText = test
@@ -42,15 +42,23 @@ export default {
         this.mode = "output"
         let textToTranslate
         if (this.backupText == "") {
-          // get index of first period after 600 characters of this.japaneseText
-          let index = this.japaneseText.indexOf("。", 600) + 1
-          textToTranslate = this.japaneseText.trim().substring(0, index)
-          // save remaining characters into this.backupText
-          this.backupText = this.japaneseText.trim().substring(index)
+          if (this.japaneseText.trim().length > 600) {
+            let index = this.japaneseText.trim().indexOf("。", 600) + 1
+            textToTranslate = this.japaneseText.trim().substring(0, index)
+            this.backupText = this.japaneseText.trim().substring(index)
+          } else {
+            textToTranslate = this.japaneseText.trim()
+            this.backupText = ""
+          }
         } else {
-          let index = this.backupText.indexOf("。", 600) + 1
-          textToTranslate = this.backupText.trim().substring(0, index)
-          this.backupText = this.backupText.trim().substring(index)
+          if (this.backupText.trim().length > 600) {
+            let index = this.backupText.trim().indexOf("。", 600) + 1
+            textToTranslate = this.backupText.trim().substring(0, index)
+            this.backupText = this.backupText.trim().substring(index)
+          } else {
+            textToTranslate = this.backupText.trim()
+            this.backupText = ""
+          }
         }
         console.log(textToTranslate)
         console.log(this.backupText)
@@ -75,21 +83,22 @@ export default {
     },
     async getFurigana(text) {
       if (!text) return
-      // return await fetch("http://127.0.0.1:3002/get_furigana", {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json"
-      //   },
-      //   body: JSON.stringify({
-      //     text: text
-      //   })
-      // })
-      // .then(res => res.json())
-      // .then(data => {
-      //   console.log(data)
-      //   return data.result;
-      // })
-      return text
+      console.log(text)
+      return await fetch("http://127.0.0.1:1237/get_furigana", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          text: text
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        console.log(data)
+        return data.result;
+      })
+      // return text
     }
   },
   mounted() {
@@ -138,7 +147,7 @@ export default {
 
 <template>
   <textarea v-if="mode == 'input'" cols="40" rows="25" v-model="japaneseText" placeholder="Enter Japanese text here"></textarea>
-  <div v-else ref="output"></div>
+  <div v-else ref="output" class="output"></div>
   <button class="parse-button" ref="parse_button" @click="translate" v-if="mode == 'input'">Parse</button>
 </template>
 
@@ -164,6 +173,13 @@ textarea {
   padding: 7px;
   font-size: 16px;
   font-family: 'Roboto', sans-serif;
+}
+.output {
+  line-height: 2;
+}
+.output span {
+  border-bottom: 1px solid black;
+  margin-right: 10px;
 }
 .parse-button {
   width: fit-content;
