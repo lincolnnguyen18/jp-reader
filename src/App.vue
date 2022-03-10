@@ -28,17 +28,22 @@ export default {
   methods: {
     async updateCurrentLine() {
       if (this.language == "ja") {
-        let line = this.japaneseText[this.currentLine][1].trim()
-        if (line) {
-          let test = line;
-          console.log(test)
-          this.$refs.output.innerHTML = test.trim()
+        if (this.japaneseText[this.currentLine][1]) {
+          let line = this.japaneseText[this.currentLine][1].trim()
+          if (line) {
+            let test = line;
+            console.log(test)
+            this.$refs.output.innerHTML = test.trim()
+          }
+        } else {
+          this.$refs.output.innerHTML = "Translation unavailable"
         }
       } else {
         this.$refs.output.innerHTML = this.japaneseText[this.currentLine][0].trim()
       }
     },
     async translate() {
+      document.getElementById('app').style.justifyContent = "center"
       if (this.mode == 'input') {
         this.loading = true
         this.mode = "output"
