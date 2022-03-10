@@ -28,13 +28,29 @@ app.post("/get_furigana", (req, res) => {
       let tokens = line.split("\t");
       console.log(tokens)
       if (tokens.length == 2) {
-        const word = tokens[0];
+        let word = tokens[0];
         tokens = tokens[1].split(",");
         let furigana = tokens[7];
         try {
           furigana = romajiConv(furigana).toHiragana();
           if (word != furigana) {
-            htmlPiece += `<ruby>${word}<rt>${furigana}</rt></ruby>`;
+            let i = furigana.length - 1;
+            let j = word.length - 1;
+            console.log(`furigana: ${furigana}`)
+            console.log(`word: ${word}`)
+            while (furigana[i] && word[j] && furigana[i] == word[j]) {
+              console.log(`${furigana[i]} == ${word[j]}`)
+              i--;
+              j--;
+            }
+            furigana = furigana.substring(0, i + 1);
+            console.log(`furigana!: ${furigana}`)
+            let remainder = word.substring(j + 1);
+            console.log(`remainder!: ${remainder}`)
+            word = word.substring(0, j + 1);
+            console.log(`word!: ${word}`)
+            console.log('test')
+            htmlPiece += `<ruby>${word}<rt>${furigana}</rt>${remainder}</ruby>`;
           } else {
             htmlPiece += word;
           }
