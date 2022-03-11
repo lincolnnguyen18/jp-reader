@@ -117,11 +117,14 @@ export default {
       }
     },
     async translateText(text) {
+      // remove hash tags from text
+      text = text.replace('#', '')
       const url = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=en&dt=t&q=" + encodeURI(text);
       const result = await fetch(url);
       const json = await result.json();
 
       try {
+        console.log(json);
         console.log(json[0]);
         return json[0];
       } catch (error) {
