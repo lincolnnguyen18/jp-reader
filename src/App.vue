@@ -51,6 +51,14 @@ export default {
         if (this.backupText == "") {
           if (this.japaneseText.trim().length > 600) {
             let index = this.japaneseText.trim().indexOf("。", 600) + 1
+            console.log(this.japaneseText.trim())
+            console.log(this.japaneseText.trim().indexOf("。", 600))
+            if (index == 0) {
+              index = this.japaneseText.trim().lastIndexOf("。") + 1
+              if (index == 0) {
+                index = 600
+              }
+            }
             textToTranslate = this.japaneseText.trim().substring(0, index)
             this.backupText = this.japaneseText.trim().substring(index)
           } else {
@@ -60,6 +68,12 @@ export default {
         } else {
           if (this.backupText.trim().length > 600) {
             let index = this.backupText.trim().indexOf("。", 600) + 1
+            if (index == 0) {
+              index = this.backupText.trim().lastIndexOf("。") + 1
+              if (index == 0) {
+                index = 600
+              }
+            }
             textToTranslate = this.backupText.trim().substring(0, index)
             this.backupText = this.backupText.trim().substring(index)
           } else {
@@ -78,11 +92,11 @@ export default {
           let line = this.japaneseText[i]
           console.log(line[0])
           console.log(line[1])
-          let newLine = [];
+          let newLine = []
           newLine.push(line[0].trim())
           this.getFurigana(line[1].trim()).then(result => {
             newLine.push(result)
-            newJapaneseText.push(newLine)
+            newJapaneseText[i] = newLine
             if (i == this.japaneseText.length - 1) {
               this.japaneseText = newJapaneseText
               this.updateCurrentLine()
