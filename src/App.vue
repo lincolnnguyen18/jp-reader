@@ -37,6 +37,8 @@ export default {
           }
         } else {
           this.$refs.output.innerHTML = "Translation unavailable"
+          console.log('HERERERE')
+          console.log(this.japaneseText[this.currentLine])
         }
       } else {
         this.$refs.output.innerHTML = this.japaneseText[this.currentLine][0].trim()
@@ -95,7 +97,10 @@ export default {
           let newLine = []
           newLine.push(line[0].trim())
           this.getFurigana(line[1].trim()).then(result => {
-            newLine.push(result)
+            if (result)
+              newLine.push(result)
+            else
+              newLine.push(line[1].trim())
             newJapaneseText[i] = newLine
             if (i == this.japaneseText.length - 1) {
               this.japaneseText = newJapaneseText
