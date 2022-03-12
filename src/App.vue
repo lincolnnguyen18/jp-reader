@@ -1,6 +1,41 @@
 <script>
 import Loading from './components/Loading.vue'
+const getCookie = (key) => {
+  let cookie = document.cookie.split('; ')
+  for (let i = 0; i < cookie.length; i++) {
+    let arr = cookie[i].split('=')
+    if (arr[0] === key) {
+      return arr[1]
+    }
+  }
+  return ''
+}
+const clickOutside = {
+  mounted: (el, binding, vnode) => {
+    el.clickOutsideEvent = (e) => {
+      if (!el.contains(e.target)) {
+        binding.value();
+      }
+    };
+    setTimeout(() => {
+      window.addEventListener('click', el.clickOutsideEvent);
+    }, 1);
+  },
+  unmounted: (el) => {
+    window.removeEventListener('click', el.clickOutsideEvent);
+  }
+}
 export default {
+  directives: {
+    clickOutside
+  },
+  computed: {
+    currentLanguageFull: function () {
+      // get index of currentLanguage in langFulls
+      var index = this.langAbbrevs.indexOf(this.currentLanguage)
+      return this.langFulls[index]
+    }
+  },
   data() {
     return {
       japaneseText: "",
@@ -9,7 +44,12 @@ export default {
       language: "ja",
       currentLineText: "",
       backupText: "",
-      loading: false
+      loading: false,
+      langFulls: ["Afrikaans", "Albanian", "Amharic", "Arabic", "Armenian", "Azerbaijani", "Basque", "Belarusian", "Bengali", "Bosnian", "Bulgarian", "Catalan", "Cebuano", "Chinese", "Corsican", "Croatian", "Czech", "Danish", "Dutch", "English", "Esperanto", "Estonian", "Finnish", "French", "Frisian", "Galician", "Georgian", "German", "Greek", "Gujarati", "Haitian Creole", "Hausa", "Hawaiian", "Hebrew", "Hindi", "Hmong", "Hungarian", "Icelandic", "Igbo", "Indonesian", "Irish", "Italian", "Japanese", "Javanese", "Kannada", "Kazakh", "Khmer", "Kinyarwanda", "Korean", "Kurdish", "Kyrgyz", "Lao", "Latvian", "Lithuanian", "Luxembourgish", "Macedonian", "Malagasy", "Malay", "Malayalam", "Maltese", "Maori", "Marathi", "Mongolian", "Myanmar (Burmese)", "Nepali", "Norwegian", "Nyanja (Chichewa)", "Odia (Oriya)", "Pashto", "Persian", "Polish", "Portuguese (Portugal, Brazil)", "Punjabi", "Romanian", "Russian", "Samoan", "Scots Gaelic", "Serbian", "Sesotho", "Shona", "Sindhi", "Sinhala (Sinhalese)", "Slovak", "Slovenian", "Somali", "Spanish", "Sundanese", "Swahili", "Swedish", "Tagalog (Filipino)", "Tajik", "Tamil", "Tatar", "Telugu", "Thai", "Turkish", "Turkmen", "Ukrainian", "Urdu", "Uyghur", "Uzbek", "Vietnamese", "Welsh", "Xhosa", "Yiddish", "Yoruba", "Zulu"],
+      langAbbrevs: ["af", "sq", "am", "ar", "hy", "az", "eu", "be", "bn", "bs", "bg", "ca", "ceb", "zh", "co", "hr", "cs", "da", "nl", "en", "eo", "et", "fi", "fr", "fy", "gl", "ka", "de", "el", "gu", "ht", "ha", "haw", "he", "hi", "hmn", "hu", "is", "ig", "id", "ga", "it", "ja", "jv", "kn", "kk", "km", "rw", "ko", "ku", "ky", "lo", "lv", "lt", "lb", "mk", "mg", "ms", "ml", "mt", "mi", "mr", "mn", "my", "ne", "no", "ny", "or", "ps", "fa", "pl", "pt", "pa", "ro", "ru", "sm", "gd", "sr", "st", "sn", "sd", "si", "sk", "sl", "so", "es", "su", "sw", "sv", "tl", "tg", "ta", "tt", "te", "th", "tr", "tk", "uk", "ur", "ug", "uz", "vi", "cy", "xh", "yi", "yo", "zu"],
+      currentLanguage: "en",
+      languagesOpen: false,
+      sourceLanguage: null
     }
   },
   // computed: {
@@ -26,6 +66,22 @@ export default {
   //   }
   // },
   methods: {
+    openLanguages() {
+      this.languagesOpen = true;
+    },
+    toggleLanguages() {
+      this.languagesOpen = !this.languagesOpen;
+    },
+    closeLanguages() {
+      this.languagesOpen = false;
+    },
+    changeLanguage(langFull) {
+      let index = this.langFulls.indexOf(langFull);
+      this.currentLanguage = this.langAbbrevs[index];
+      // update cookie to remember language
+      document.cookie = "language=" + this.currentLanguage;
+      this.closeLanguages();
+    },
     async updateCurrentLine() {
       if (this.language == "ja") {
         if (this.japaneseText[this.currentLine][1]) {
@@ -37,7 +93,6 @@ export default {
           }
         } else {
           this.$refs.output.innerHTML = "Translation unavailable"
-          console.log('HERERERE')
           console.log(this.japaneseText[this.currentLine])
         }
       } else {
@@ -89,43 +144,68 @@ export default {
           return -1
         }
         this.japaneseText = await this.translateText(textToTranslate)
-        let newJapaneseText = [];
-        for (let i = 0; i < this.japaneseText.length; i++) {
-          let line = this.japaneseText[i]
-          console.log(line[0])
-          console.log(line[1])
-          let newLine = []
-          newLine.push(line[0].trim())
-          this.getFurigana(line[1].trim()).then(result => {
-            if (result)
-              newLine.push(result)
-            else
-              newLine.push(line[1].trim())
-            newJapaneseText[i] = newLine
-            if (i == this.japaneseText.length - 1) {
-              this.japaneseText = newJapaneseText
-              this.updateCurrentLine()
-              this.loading = false
-              document.getElementById('app').style.justifyContent = "flex-start"
-              // setTimeout(() => {
-              //   console.log('test')
-              //   this.$refs.loading_icon.classList.add("hidden")
-              // }, 10000)
-            }
-          })
+        if (this.sourceLanguage == "ja") {
+          let newJapaneseText = [];
+          for (let i = 0; i < this.japaneseText.length; i++) {
+            let line = this.japaneseText[i]
+            console.log(line[0])
+            console.log(line[1])
+            let newLine = []
+            newLine.push(line[0].trim())
+            this.getFurigana(line[1].trim()).then(result => {
+              if (result)
+                newLine.push(result)
+              else
+                newLine.push(line[1].trim())
+              newJapaneseText[i] = newLine
+              if (i == this.japaneseText.length - 1) {
+                this.japaneseText = newJapaneseText
+                this.updateCurrentLine()
+                this.loading = false
+                document.getElementById('app').style.justifyContent = "flex-start"
+              }
+            })
+          }
+        } else if (this.currentLanguage == "ja") {
+          let newJapaneseText = [];
+          for (let i = 0; i < this.japaneseText.length; i++) {
+            let line = this.japaneseText[i]
+            console.log(line[0])
+            console.log(line[1])
+            let newLine = []
+            newLine[1] = line[1].trim()
+            this.getFurigana(line[0].trim()).then(result => {
+              if (result)
+                newLine[0] = result
+              else
+                newLine[0] = line[0].trim()
+              newJapaneseText[i] = newLine
+              if (i == this.japaneseText.length - 1) {
+                this.japaneseText = newJapaneseText
+                this.updateCurrentLine()
+                this.loading = false
+                document.getElementById('app').style.justifyContent = "flex-start"
+              }
+            })
+          }
+        } else {
+          this.updateCurrentLine()
+          this.loading = false
+          document.getElementById('app').style.justifyContent = "flex-start"
         }
       }
     },
     async translateText(text) {
       // remove hash tags from text
       text = text.replace('#', '')
-      const url = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=en&dt=t&q=" + encodeURI(text);
+      const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${this.currentLanguage}&dt=t&q=` + encodeURI(text);
       const result = await fetch(url);
       const json = await result.json();
 
       try {
         console.log(json);
         console.log(json[0]);
+        this.sourceLanguage = json[2]
         return json[0];
       } catch (error) {
         return error.message;
@@ -152,6 +232,10 @@ export default {
     }
   },
   mounted() {
+    // update this.currentLanguage with saved cookie if it exists
+    if (getCookie("language")) {
+      this.currentLanguage = getCookie("language")
+    }
     // listen for arrow key right
     document.addEventListener("keydown", async (e) => {
       if (e.key == "ArrowRight" && !this.loading) {
@@ -191,6 +275,9 @@ export default {
         this.currentLine = 0;
         this.backupText = "";
         document.getElementById('app').style.justifyContent = "center"
+        setTimeout(() => {
+          this.$refs.textarea.focus();
+        }, 100)
       }
     });
   },
@@ -200,12 +287,28 @@ export default {
 
 <template>
   <Loading ref="loading_icon" v-if="loading"></Loading>
-  <textarea v-if="mode == 'input'" cols="40" rows="25" v-model="japaneseText" placeholder="Enter Japanese text here"></textarea>
+  <textarea v-if="mode == 'input'" cols="40" rows="25" v-model="japaneseText" placeholder="Enter text to translate here" ref="textarea" autofocus></textarea>
   <div v-else ref="output" class="output" :class="{'hidden': loading}"></div>
-  <button class="parse-button" ref="parse_button" @click="translate" v-if="mode == 'input'">Parse</button>
+  <div class="bottom" v-if="mode == 'input'">
+    <div class="languages-wrapper">
+      <div class="languages-label">Translate to:</div>
+      <div class="languages">
+        <div class="toggle" @click="toggleLanguages" v-clickOutside="closeLanguages">
+          <span class="current-lang">{{ currentLanguageFull }}</span>
+          <span class="material-icons-outlined">expand_more</span>
+        </div>
+        <div class="popup" v-if="languagesOpen">
+          <div v-for="language in langFulls" class="language" :key="language" @click="changeLanguage(language)">{{ language }}</div>
+        </div>
+      </div>
+    </div>
+    <button class="parse-button" ref="parse_button" @click="translate" >Parse</button>
+  </div>
 </template>
 
 <style>
+@import url('https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Two+Tone|Material+Icons+Round|Material+Icons+Sharp');
+
 .hidden {
   display: none !important;
 }
@@ -215,7 +318,7 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 22px;
+  font-size: 16px;
   font-family: 'Roboto', sans-serif;
 }
 #app {
@@ -237,6 +340,8 @@ textarea {
   line-height: 2;
   padding: 60px 0;
   margin: auto 0;
+  word-break: break-word;
+  font-size: 22px;
 }
 .output span {
   border-bottom: 1px solid black;
@@ -253,5 +358,63 @@ textarea {
   cursor: pointer;
   user-select: none;
   font-size: 16px;
+}
+.bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.languages {
+  display: flex;
+  align-items: center;
+  user-select: none;
+  cursor: pointer;
+  position: relative;
+}
+.current-lang {
+  width: 80px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.toggle {
+  display: flex;
+  align-items: center;
+}
+.popup {
+  position: absolute;
+  bottom: 34px;
+  background: white;
+  padding: 0 3px;
+  left: -10px;
+  width: 130px;
+  border-radius: 7px;
+  height: 300px;
+  overflow-y: auto;
+  box-shadow: 0px 4px 4px rgb(0 0 0 / 25%);
+  border: 1px solid #767676;
+}
+/* .languages-label {
+  margin-right: 10px;
+} */
+.languages-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.language {
+  padding: 10px;
+  cursor: pointer;
+  user-select: none;
+  padding: 6px 10px;
+  cursor: pointer;
+  user-select: none;
+  border-bottom: 1px solid #e1e1e1;
+}
+.language:last-child {
+  border-bottom: none;
+}
+.language:hover {
+  background-color: #e1e1e1;
 }
 </style>
