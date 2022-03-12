@@ -67,5 +67,5 @@ app.post("/get_furigana", (req, res) => {
   });
 });
 
-const port = 1237;
+const port = 1337;
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));  

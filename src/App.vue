@@ -105,10 +105,10 @@ export default {
         this.loading = true
         this.mode = "output"
         let textToTranslate
-        let period = "。"
-        if (this.japaneseText.indexOf(period) == -1)
-          period = "."
         if (this.backupText == "") {
+          let period = "。"
+          if (this.japaneseText.indexOf(period) == -1)
+            period = "."
           if (this.japaneseText.trim().length > 600) {
             let index = this.japaneseText.trim().indexOf(period, 600) + 1
             console.log(this.japaneseText.trim())
@@ -126,6 +126,9 @@ export default {
             this.backupText = ""
           }
         } else {
+          let period = "。"
+          if (this.backupText.indexOf(period) == -1)
+            period = "."
           if (this.backupText.trim().length > 600) {
             let index = this.backupText.trim().indexOf(period, 600) + 1
             if (index == 0) {
@@ -217,7 +220,7 @@ export default {
     async getFurigana(text) {
       if (!text) return
       console.log(text)
-      return await fetch("http://127.0.0.1:1237/get_furigana", {
+      return await fetch("http://127.0.0.1:1337/get_furigana", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
