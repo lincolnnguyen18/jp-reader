@@ -247,9 +247,9 @@ export default {
         if (this.languagesOpen) {
           // get first language that starts with letter in this.langFulls
           let language = this.langFulls.find(lang => lang.startsWith(e.key.toUpperCase()))
-          console.log(language)
+          // console.log(language)
           let el = document.getElementById(language)
-          console.log(el)
+          // console.log(el)
           el.scrollIntoView({
             behavior: "auto",
             block: "center"
