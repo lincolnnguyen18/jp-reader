@@ -105,13 +105,16 @@ export default {
         this.loading = true
         this.mode = "output"
         let textToTranslate
+        let period = "。"
+        if (this.japaneseText.indexOf(period) == -1)
+          period = "."
         if (this.backupText == "") {
           if (this.japaneseText.trim().length > 600) {
-            let index = this.japaneseText.trim().indexOf("。", 600) + 1
+            let index = this.japaneseText.trim().indexOf(period, 600) + 1
             console.log(this.japaneseText.trim())
-            console.log(this.japaneseText.trim().indexOf("。", 600))
+            console.log(this.japaneseText.trim().indexOf(period, 600))
             if (index == 0) {
-              index = this.japaneseText.trim().lastIndexOf("。") + 1
+              index = this.japaneseText.trim().lastIndexOf(period) + 1
               if (index == 0) {
                 index = 600
               }
@@ -124,9 +127,9 @@ export default {
           }
         } else {
           if (this.backupText.trim().length > 600) {
-            let index = this.backupText.trim().indexOf("。", 600) + 1
+            let index = this.backupText.trim().indexOf(period, 600) + 1
             if (index == 0) {
-              index = this.backupText.trim().lastIndexOf("。") + 1
+              index = this.backupText.trim().lastIndexOf(period) + 1
               if (index == 0) {
                 index = 600
               }
@@ -238,6 +241,21 @@ export default {
     }
     // listen for arrow key right
     document.addEventListener("keydown", async (e) => {
+      // check if key is alphabetic
+      if (e.key.length == 1 && (e.key >= "a" && e.key <= "z" || e.key >= "A" && e.key <= "Z")) {
+        // check if langauges popup is open
+        if (this.languagesOpen) {
+          // get first language that starts with letter in this.langFulls
+          let language = this.langFulls.find(lang => lang.startsWith(e.key.toUpperCase()))
+          console.log(language)
+          let el = document.getElementById(language)
+          console.log(el)
+          el.scrollIntoView({
+            behavior: "auto",
+            block: "center"
+          })
+        }
+      }
       if (e.key == "ArrowRight" && !this.loading) {
         if (this.currentLine < this.japaneseText.length - 1) {
           this.currentLine++;
@@ -298,7 +316,7 @@ export default {
           <span class="material-icons-outlined">expand_more</span>
         </div>
         <div class="popup" v-if="languagesOpen">
-          <div v-for="language in langFulls" class="language" :key="language" @click="changeLanguage(language)">{{ language }}</div>
+          <div v-for="language in langFulls" class="language" :key="language" @click="changeLanguage(language)" :id="language">{{ language }}</div>
         </div>
       </div>
     </div>
@@ -415,6 +433,9 @@ textarea {
   border-bottom: none;
 }
 .language:hover {
+  background-color: #e1e1e1;
+}
+.language:focus {
   background-color: #e1e1e1;
 }
 </style>
