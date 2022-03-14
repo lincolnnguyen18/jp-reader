@@ -59,8 +59,7 @@ export default {
       langAbbrevs: ["af", "sq", "am", "ar", "hy", "az", "eu", "be", "bn", "bs", "bg", "ca", "ceb", "zh", "co", "hr", "cs", "da", "nl", "en-US", "eo", "et", "fi", "fr", "fy", "gl", "ka", "de", "el", "gu", "ht", "ha", "haw", "he", "hi", "hmn", "hu", "is", "ig", "id", "ga", "it", "ja", "jv", "kn", "kk", "km", "rw", "ko", "ku", "ky", "lo", "lv", "lt", "lb", "mk", "mg", "ms", "ml", "mt", "mi", "mr", "mn", "my", "ne", "no", "ny", "or", "ps", "fa", "pl", "pt", "pa", "ro", "ru", "sm", "gd", "sr", "st", "sn", "sd", "si", "sk", "sl", "so", "es", "su", "sw", "sv", "tl", "tg", "ta", "tt", "te", "th", "tr", "tk", "uk", "ur", "ug", "uz", "vi", "cy", "xh", "yi", "yo", "zu"],
       currentLanguage: "en-US",
       languagesOpen: false,
-      sourceLanguage: null,
-      isSpeaking: speechSynthesis.speaking
+      sourceLanguage: null
     }
   },
   // computed: {
@@ -78,8 +77,9 @@ export default {
   // },
   methods: {
     playSentence() {
-      if (this.isSpeaking) {
+      if (speechSynthesis.speaking) {
         speechSynthesis.cancel()
+        return;
       }
       this.$refs.play.innerHTML = 'volume_up';
       let sentence;
@@ -146,13 +146,13 @@ export default {
       speechSynthesis.speak(u);
     },
     closeOutput() {
-      this.japaneseText = "";
+      // this.japaneseText = "";
       this.mode = "input";
       this.currentLine = 0;
       this.backupText = "";
       document.getElementById('app').style.justifyContent = "center"
       setTimeout(() => {
-        this.$refs.textarea.focus();
+        this.$refs.textarea.select();
       }, 100)
     },
     openLanguages() {
@@ -352,35 +352,41 @@ export default {
       }
       if (e.key == "ArrowRight" && !this.loading) {
         if (speechSynthesis.speaking) speechSynthesis.cancel();
-        if (this.currentLine < this.japaneseText.length - 1) {
-          this.currentLine++;
-          this.updateCurrentLine()
-        } else if (this.backupText != "") {
-          // this.$refs.loading_icon.classList.remove("hidden")
-          this.mode = "input"
-          let flag = await this.translate()
-          if (flag != -1) {
-            this.currentLine = 0
-            // this.updateCurrentLine()
+        setTimeout(async () => {
+          if (this.currentLine < this.japaneseText.length - 1) {
+            this.currentLine++;
+            this.updateCurrentLine()
+          } else if (this.backupText != "") {
+            // this.$refs.loading_icon.classList.remove("hidden")
+            this.mode = "input"
+            let flag = await this.translate()
+            if (flag != -1) {
+              this.currentLine = 0
+              // this.updateCurrentLine()
+            }
           }
-        }
+        }, 100)
       }
       if (e.key == "ArrowLeft" && !this.loading) {
         if (this.currentLine > 0) {
-          this.currentLine--;
-          this.updateCurrentLine()
+          setTimeout(() => {
+            this.currentLine--;
+            this.updateCurrentLine()
+          }, 100)
         }
       }
       // space
       if ((e.key == "ArrowUp" || e.key == "ArrowDown") && !this.loading) {
         if (speechSynthesis.speaking) speechSynthesis.cancel();
-        if (this.language == "ja") {
-          this.language = "en";
-          this.updateCurrentLine();
-        } else {
-          this.language = "ja";
-          this.updateCurrentLine();
-        }
+        setTimeout(() => {
+          if (this.language == "ja") {
+            this.language = "en";
+            this.updateCurrentLine();
+          } else {
+            this.language = "ja";
+            this.updateCurrentLine();
+          }
+        }, 100)
       }
       // escape
       if (e.key == "Escape") {
@@ -388,11 +394,7 @@ export default {
         this.closeOutput();
       }
       if (e.key == " ") {
-        if (speechSynthesis.speaking) {
-          speechSynthesis.cancel();
-        } else {
-          this.playSentence();
-        }
+        this.playSentence();
       }
     });
     // print window url
