@@ -18,6 +18,7 @@ const getRawJapanese = (node) => {
   div.innerHTML = node.innerHTML.replace(/<rt.*?>.*?<\/rt>/ig,'');
   return div.innerText;
 }
+window.u = new SpeechSynthesisUtterance();
 const clickOutside = {
   mounted: (el, binding, vnode) => {
     el.clickOutsideEvent = (e) => {
@@ -79,45 +80,55 @@ export default {
       let sentence;
       let sourceLang;
       if (this.language == "en") {
-        sentence = this.noFuriganaText[this.currentLine][0]
+        if (this.currentLanguage == "ja")
+          sentence = this.noFuriganaText[this.currentLine][0]
+        else
+          sentence = this.japaneseText[this.currentLine][0]
         sourceLang = this.currentLanguage;
       } else {
-        sentence = this.noFuriganaText[this.currentLine][1]
+        if (this.sourceLanguage == "ja")
+          sentence = this.noFuriganaText[this.currentLine][1]
+        else
+          sentence = this.japaneseText[this.currentLine][1]
         sourceLang = this.sourceLanguage;
       }
       console.log(sentence)
       console.log(this.currentLanguage, this.sourceLanguage)
       console.log(sourceLang)
 
-      let backup;
+      let backup = this.$refs.output.innerHTML;
       // if (this.sourceLang == "ja") {
-        backup = this.$refs.output.innerHTML;
         this.$refs.output.innerHTML = sentence;
         console.log(this.$refs.output.innerHTML)
       // }
 
-      let supportedLangs = speechSynthesis.getVoices().map(function(voice) {
-        return voice.lang.split('-')[0];
-      });
+      // let supportedLangs = speechSynthesis.getVoices().map(function(voice) {
+      //   return voice.lang.split('-')[0];
+      // });
+      let supportedLangs = ['en-US', 'it', 'sv', 'fr', 'de', 'he', 'id', 'es', 'nl', 'ro', 'pt', 'th', 'ja', 'sk', 'hi', 'ar', 'hu', 'zh', 'el', 'ru', 'nb', 'da', 'fi', 'tr', 'ko', 'pl', 'cs']
       if (!supportedLangs.includes(sourceLang)) {
         return
       }
 
-      var u = new SpeechSynthesisUtterance();
       u.text = sentence;
       u.lang = sourceLang;
       u.rate = 1.2;
       let spans = document.querySelector("#app > div span")
-      u.onboundary = function(event) {
-        console.log(event)
+      u.onboundary = (e) => {
+        // console.log(e)
         // print text from the start of the word to the end of the word
-        console.log(this.text.substring(event.charIndex, event.charIndex + event.charLength));
+        console.log(u.text.substring(e.charIndex, e.charIndex + e.charLength));
+        // this.$refs.output.innerText = u.text.substring(e.charIndex, e.charIndex + e.charLength);
+        let textBeforeWord = u.text.substring(0, e.charIndex);
+        let word = u.text.substring(e.charIndex, e.charIndex + e.charLength);
+        let textAfterWord = u.text.substring(e.charIndex + e.charLength);
+        this.$refs.output.innerHTML = `<span class="highlight">${textBeforeWord}${word}</span>${textAfterWord}`;
+        // console.log(`${textBeforeWord}<span class="highlight">${word}</span>${textAfterWord}`)
       }
-      u.onend = function(event) {
-        console.log("Finished in " + event.elapsedTime + " seconds.");
-        if (this.sourceLang == "ja") {
-          this.$refs.output.innerHTML = backup;
-        }
+      u.onend = (e) => {
+        console.log("Finished in " + e.elapsedTime + " seconds.");
+          // console.log(this.$refs.output)
+        this.$refs.output.innerHTML = backup;
       }
       // var u = new SpeechSynthesisUtterance();
       // u.text = sentence;
@@ -239,9 +250,11 @@ export default {
               if (i == this.japaneseText.length - 1) {
                 this.noFuriganaText = this.japaneseText
                 this.japaneseText = newJapaneseText
-                this.updateCurrentLine()
-                this.loading = false
-                document.getElementById('app').style.justifyContent = "flex-start"
+                setTimeout(() => {
+                  this.updateCurrentLine()
+                  this.loading = false
+                  document.getElementById('app').style.justifyContent = "flex-start"
+                }, 100)
               }
             })
           }
@@ -446,6 +459,11 @@ textarea {
 .output span {
   border-bottom: 1px solid black;
   margin-right: 10px;
+}
+.output .highlight {
+  border-bottom: none;
+  margin-right: 0;
+  background-color: #efff5b;
 }
 .parse-button {
   width: fit-content;
