@@ -59,7 +59,8 @@ export default {
       langAbbrevs: ["af", "sq", "am", "ar", "hy", "az", "eu", "be", "bn", "bs", "bg", "ca", "ceb", "zh", "co", "hr", "cs", "da", "nl", "en-US", "eo", "et", "fi", "fr", "fy", "gl", "ka", "de", "el", "gu", "ht", "ha", "haw", "he", "hi", "hmn", "hu", "is", "ig", "id", "ga", "it", "ja", "jv", "kn", "kk", "km", "rw", "ko", "ku", "ky", "lo", "lv", "lt", "lb", "mk", "mg", "ms", "ml", "mt", "mi", "mr", "mn", "my", "ne", "no", "ny", "or", "ps", "fa", "pl", "pt", "pa", "ro", "ru", "sm", "gd", "sr", "st", "sn", "sd", "si", "sk", "sl", "so", "es", "su", "sw", "sv", "tl", "tg", "ta", "tt", "te", "th", "tr", "tk", "uk", "ur", "ug", "uz", "vi", "cy", "xh", "yi", "yo", "zu"],
       currentLanguage: "en-US",
       languagesOpen: false,
-      sourceLanguage: null
+      sourceLanguage: null,
+      isSpeaking: speechSynthesis.speaking
     }
   },
   // computed: {
@@ -77,6 +78,10 @@ export default {
   // },
   methods: {
     playSentence() {
+      if (this.isSpeaking) {
+        speechSynthesis.cancel()
+      }
+      this.$refs.play.innerHTML = 'volume_up';
       let sentence;
       let sourceLang;
       if (this.language == "en") {
@@ -129,6 +134,7 @@ export default {
         console.log("Finished in " + e.elapsedTime + " seconds.");
           // console.log(this.$refs.output)
         this.$refs.output.innerHTML = backup;
+        this.$refs.play.innerHTML = 'volume_mute';
       }
       // var u = new SpeechSynthesisUtterance();
       // u.text = sentence;
@@ -345,6 +351,7 @@ export default {
         }
       }
       if (e.key == "ArrowRight" && !this.loading) {
+        if (speechSynthesis.speaking) speechSynthesis.cancel();
         if (this.currentLine < this.japaneseText.length - 1) {
           this.currentLine++;
           this.updateCurrentLine()
@@ -366,6 +373,7 @@ export default {
       }
       // space
       if ((e.key == "ArrowUp" || e.key == "ArrowDown") && !this.loading) {
+        if (speechSynthesis.speaking) speechSynthesis.cancel();
         if (this.language == "ja") {
           this.language = "en";
           this.updateCurrentLine();
@@ -376,10 +384,15 @@ export default {
       }
       // escape
       if (e.key == "Escape") {
+        if (speechSynthesis.speaking) speechSynthesis.cancel();
         this.closeOutput();
       }
       if (e.key == " ") {
-        this.playSentence();
+        if (speechSynthesis.speaking) {
+          speechSynthesis.cancel();
+        } else {
+          this.playSentence();
+        }
       }
     });
     // print window url
@@ -415,7 +428,7 @@ export default {
     </div>
     <button class="parse-button" ref="parse_button" @click="translate" >Parse</button>
   </div>
-  <span class="material-icons-outlined play" @click="playSentence" v-if="mode != 'input'">volume_up</span>
+  <span class="material-icons-outlined play" @click="playSentence" v-if="mode != 'input'" ref="play">volume_mute</span>
   <span class="material-icons-outlined close" @click="closeOutput" v-if="mode != 'input'">close</span>
 </template>
 
@@ -495,6 +508,9 @@ textarea {
   font-size: 30px;
   user-select: none;
   cursor: pointer;
+}
+.isPlaying {
+  color: #aaa;
 }
 .close {
   position: fixed;
