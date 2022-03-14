@@ -10,6 +10,9 @@ const getCookie = (key) => {
   }
   return ''
 }
+const params = new Proxy(new URLSearchParams(window.location.search), {
+  get: (searchParams, prop) => searchParams.get(prop),
+});
 const clickOutside = {
   mounted: (el, binding, vnode) => {
     el.clickOutsideEvent = (e) => {
@@ -220,7 +223,7 @@ export default {
     async getFurigana(text) {
       if (!text) return
       console.log(text)
-      return await fetch("http://127.0.0.1:1337/get_furigana", {
+      return await fetch("http://127.0.0.1:4324/get_furigana", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -301,6 +304,14 @@ export default {
         }, 100)
       }
     });
+    // print window url
+    console.log(window.location.href)
+    // get query argument 'text' form url
+    let text = params.text
+    console.log(text)
+    if (text) {
+      this.$refs.textarea.value = text
+    }
   },
   components: { Loading }
 }

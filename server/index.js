@@ -6,6 +6,7 @@ const app = express();
 app.use(express.json());
 app.use(cors())
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static('../dist'));
 
 app.post("/get_furigana", (req, res) => {
   const { text } = req.body;
@@ -67,5 +68,5 @@ app.post("/get_furigana", (req, res) => {
   });
 });
 
-const port = 1337;
+const port = 7004;
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));  
