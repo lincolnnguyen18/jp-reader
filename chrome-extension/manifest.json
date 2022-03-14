@@ -1,0 +1,30 @@
+{
+    "manifest_version": 2,
+    "name": "Quick Select",
+    "version": "1.0",
+    "description": "Select stuff quickly!",
+    "commands": {
+        "bark": {
+            "suggested_key": {
+                "default": "Alt+Shift+3"
+            },
+            "description": "Copy text in select divs to clipboard"
+        }
+    },
+    "background": {
+        "scripts": [
+            "background.js"
+        ],
+        "persistent": false
+    },
+    "content_scripts": [
+        {
+            "matches": ["<all_urls>"],
+            "js": ["content.js"],
+            "css": ["content.css"]
+        }
+    ],
+    "permissions": [
+        "tabs"
+    ]
+}
