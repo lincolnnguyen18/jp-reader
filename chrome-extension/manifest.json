@@ -1,14 +1,14 @@
 {
     "manifest_version": 2,
-    "name": "Quick Select",
+    "name": "Quick Reader",
     "version": "1.0",
-    "description": "Select stuff quickly!",
+    "description": "Read stuff quickly!",
     "commands": {
         "bark": {
             "suggested_key": {
                 "default": "Alt+Shift+3"
             },
-            "description": "Copy text in select divs to clipboard"
+            "description": "Send text in selected divs to quickreader"
         }
     },
     "background": {
