@@ -13,6 +13,11 @@ const getCookie = (key) => {
 const params = new Proxy(new URLSearchParams(window.location.search), {
   get: (searchParams, prop) => searchParams.get(prop),
 });
+const getRawJapanese = (node) => {
+  let div =  document.createElement('div');
+  div.innerHTML = node.innerHTML.replace(/<rt.*?>.*?<\/rt>/ig,'');
+  return div.innerText;
+}
 const clickOutside = {
   mounted: (el, binding, vnode) => {
     el.clickOutsideEvent = (e) => {
@@ -42,6 +47,7 @@ export default {
   data() {
     return {
       japaneseText: "",
+      noFuriganaText: "",
       mode: "input",
       currentLine: 0,
       language: "ja",
@@ -49,8 +55,8 @@ export default {
       backupText: "",
       loading: false,
       langFulls: ["Afrikaans", "Albanian", "Amharic", "Arabic", "Armenian", "Azerbaijani", "Basque", "Belarusian", "Bengali", "Bosnian", "Bulgarian", "Catalan", "Cebuano", "Chinese", "Corsican", "Croatian", "Czech", "Danish", "Dutch", "English", "Esperanto", "Estonian", "Finnish", "French", "Frisian", "Galician", "Georgian", "German", "Greek", "Gujarati", "Haitian Creole", "Hausa", "Hawaiian", "Hebrew", "Hindi", "Hmong", "Hungarian", "Icelandic", "Igbo", "Indonesian", "Irish", "Italian", "Japanese", "Javanese", "Kannada", "Kazakh", "Khmer", "Kinyarwanda", "Korean", "Kurdish", "Kyrgyz", "Lao", "Latvian", "Lithuanian", "Luxembourgish", "Macedonian", "Malagasy", "Malay", "Malayalam", "Maltese", "Maori", "Marathi", "Mongolian", "Myanmar (Burmese)", "Nepali", "Norwegian", "Nyanja (Chichewa)", "Odia (Oriya)", "Pashto", "Persian", "Polish", "Portuguese (Portugal, Brazil)", "Punjabi", "Romanian", "Russian", "Samoan", "Scots Gaelic", "Serbian", "Sesotho", "Shona", "Sindhi", "Sinhala (Sinhalese)", "Slovak", "Slovenian", "Somali", "Spanish", "Sundanese", "Swahili", "Swedish", "Tagalog (Filipino)", "Tajik", "Tamil", "Tatar", "Telugu", "Thai", "Turkish", "Turkmen", "Ukrainian", "Urdu", "Uyghur", "Uzbek", "Vietnamese", "Welsh", "Xhosa", "Yiddish", "Yoruba", "Zulu"],
-      langAbbrevs: ["af", "sq", "am", "ar", "hy", "az", "eu", "be", "bn", "bs", "bg", "ca", "ceb", "zh", "co", "hr", "cs", "da", "nl", "en", "eo", "et", "fi", "fr", "fy", "gl", "ka", "de", "el", "gu", "ht", "ha", "haw", "he", "hi", "hmn", "hu", "is", "ig", "id", "ga", "it", "ja", "jv", "kn", "kk", "km", "rw", "ko", "ku", "ky", "lo", "lv", "lt", "lb", "mk", "mg", "ms", "ml", "mt", "mi", "mr", "mn", "my", "ne", "no", "ny", "or", "ps", "fa", "pl", "pt", "pa", "ro", "ru", "sm", "gd", "sr", "st", "sn", "sd", "si", "sk", "sl", "so", "es", "su", "sw", "sv", "tl", "tg", "ta", "tt", "te", "th", "tr", "tk", "uk", "ur", "ug", "uz", "vi", "cy", "xh", "yi", "yo", "zu"],
-      currentLanguage: "en",
+      langAbbrevs: ["af", "sq", "am", "ar", "hy", "az", "eu", "be", "bn", "bs", "bg", "ca", "ceb", "zh", "co", "hr", "cs", "da", "nl", "en-US", "eo", "et", "fi", "fr", "fy", "gl", "ka", "de", "el", "gu", "ht", "ha", "haw", "he", "hi", "hmn", "hu", "is", "ig", "id", "ga", "it", "ja", "jv", "kn", "kk", "km", "rw", "ko", "ku", "ky", "lo", "lv", "lt", "lb", "mk", "mg", "ms", "ml", "mt", "mi", "mr", "mn", "my", "ne", "no", "ny", "or", "ps", "fa", "pl", "pt", "pa", "ro", "ru", "sm", "gd", "sr", "st", "sn", "sd", "si", "sk", "sl", "so", "es", "su", "sw", "sv", "tl", "tg", "ta", "tt", "te", "th", "tr", "tk", "uk", "ur", "ug", "uz", "vi", "cy", "xh", "yi", "yo", "zu"],
+      currentLanguage: "en-US",
       languagesOpen: false,
       sourceLanguage: null
     }
@@ -69,6 +75,59 @@ export default {
   //   }
   // },
   methods: {
+    playSentence() {
+      let sentence;
+      let sourceLang;
+      if (this.language == "en") {
+        sentence = this.noFuriganaText[this.currentLine][0]
+        sourceLang = this.currentLanguage;
+      } else {
+        sentence = this.noFuriganaText[this.currentLine][1]
+        sourceLang = this.sourceLanguage;
+      }
+      console.log(sentence)
+      console.log(this.currentLanguage, this.sourceLanguage)
+      console.log(sourceLang)
+
+      let backup;
+      // if (this.sourceLang == "ja") {
+        backup = this.$refs.output.innerHTML;
+        this.$refs.output.innerHTML = sentence;
+        console.log(this.$refs.output.innerHTML)
+      // }
+
+      let supportedLangs = speechSynthesis.getVoices().map(function(voice) {
+        return voice.lang.split('-')[0];
+      });
+      if (!supportedLangs.includes(sourceLang)) {
+        return
+      }
+
+      var u = new SpeechSynthesisUtterance();
+      u.text = sentence;
+      u.lang = sourceLang;
+      u.rate = 1.2;
+      let spans = document.querySelector("#app > div span")
+      u.onboundary = function(event) {
+        console.log(event)
+        // print text from the start of the word to the end of the word
+        console.log(this.text.substring(event.charIndex, event.charIndex + event.charLength));
+      }
+      u.onend = function(event) {
+        console.log("Finished in " + event.elapsedTime + " seconds.");
+        if (this.sourceLang == "ja") {
+          this.$refs.output.innerHTML = backup;
+        }
+      }
+      // var u = new SpeechSynthesisUtterance();
+      // u.text = sentence;
+      // u.lang = 'ja';
+      // u.rate = 1.2;
+      // u.onboundary = function(event) {
+      //   console.log(event)
+      // }
+      speechSynthesis.speak(u);
+    },
     closeOutput() {
       this.japaneseText = "";
       this.mode = "input";
@@ -178,6 +237,7 @@ export default {
                 newLine.push(line[1].trim())
               newJapaneseText[i] = newLine
               if (i == this.japaneseText.length - 1) {
+                this.noFuriganaText = this.japaneseText
                 this.japaneseText = newJapaneseText
                 this.updateCurrentLine()
                 this.loading = false
@@ -305,6 +365,9 @@ export default {
       if (e.key == "Escape") {
         this.closeOutput();
       }
+      if (e.key == " ") {
+        this.playSentence();
+      }
     });
     // print window url
     // console.log(window.location.href)
@@ -339,6 +402,7 @@ export default {
     </div>
     <button class="parse-button" ref="parse_button" @click="translate" >Parse</button>
   </div>
+  <span class="material-icons-outlined play" @click="playSentence" v-if="mode != 'input'">volume_up</span>
   <span class="material-icons-outlined close" @click="closeOutput" v-if="mode != 'input'">close</span>
 </template>
 
@@ -398,7 +462,7 @@ textarea {
 .parse-button:hover {
   background-color: #333;
 }
-.close:hover {
+.close:hover, .play:hover {
   color: #aaa;
 }
 .bottom {
@@ -406,11 +470,19 @@ textarea {
   align-items: center;
   justify-content: space-between;
 }
+.play {
+  position: fixed;
+  top: 20px;
+  right: 90px;
+  font-size: 30px;
+  user-select: none;
+  cursor: pointer;
+}
 .close {
   position: fixed;
   top: 20px;
   right: 20px;
-  font-size: 40px;
+  font-size: 30px;
   user-select: none;
   cursor: pointer;
 }

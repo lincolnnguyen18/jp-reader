@@ -62,17 +62,17 @@ const clickEvent = (e) => {
     let text = getVisibleText(element);
     text = reformatText(text);
     console.log(text);
-    if (text.length < 2000) {
-        let url = `https://demo6.lincolnnguyen18.com?text=${encodeURI(text)}`;
-        console.log(url);
-        // open url in new tab
-        window.open(url, '_blank');
-        element.style.backgroundColor = 'gray';
-        setTimeout(() => {
-            element.style.backgroundColor = oldBackground;
-            deactivate();
-        }, 300);
-    } else {
+    // if (text.length < 2000) {
+    //     let url = `https://demo6.lincolnnguyen18.com?text=${encodeURI(text)}`;
+    //     console.log(url);
+    //     // open url in new tab
+    //     window.open(url, '_blank');
+    //     element.style.backgroundColor = 'gray';
+    //     setTimeout(() => {
+    //         element.style.backgroundColor = oldBackground;
+    //         deactivate();
+    //     }, 300);
+    // } else {
         // copy text to clipboard
         navigator.clipboard.writeText(text).then(() => {
             // alert("Text copied!");
@@ -83,7 +83,7 @@ const clickEvent = (e) => {
                 deactivate();
             }, 300);
         });
-    }
+    // }
 }
 
 const preventDefault = (e) => {
