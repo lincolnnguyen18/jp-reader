@@ -69,6 +69,16 @@ export default {
   //   }
   // },
   methods: {
+    closeOutput() {
+      this.japaneseText = "";
+      this.mode = "input";
+      this.currentLine = 0;
+      this.backupText = "";
+      document.getElementById('app').style.justifyContent = "center"
+      setTimeout(() => {
+        this.$refs.textarea.focus();
+      }, 100)
+    },
     openLanguages() {
       this.languagesOpen = true;
     },
@@ -104,7 +114,7 @@ export default {
     },
     async translate() {
       document.getElementById('app').style.justifyContent = "center"
-      if (this.mode == 'input') {
+      if (this.mode == 'input' && this.japaneseText) {
         this.loading = true
         this.mode = "output"
         let textToTranslate
@@ -293,14 +303,7 @@ export default {
       }
       // escape
       if (e.key == "Escape") {
-        this.japaneseText = "";
-        this.mode = "input";
-        this.currentLine = 0;
-        this.backupText = "";
-        document.getElementById('app').style.justifyContent = "center"
-        setTimeout(() => {
-          this.$refs.textarea.focus();
-        }, 100)
+        this.closeOutput();
       }
     });
     // print window url
@@ -336,6 +339,7 @@ export default {
     </div>
     <button class="parse-button" ref="parse_button" @click="translate" >Parse</button>
   </div>
+  <span class="material-icons-outlined close" @click="closeOutput" v-if="mode != 'input'">close</span>
 </template>
 
 <style>
@@ -394,10 +398,21 @@ textarea {
 .parse-button:hover {
   background-color: #333;
 }
+.close:hover {
+  color: #aaa;
+}
 .bottom {
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+.close {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  font-size: 40px;
+  user-select: none;
+  cursor: pointer;
 }
 .languages {
   display: flex;
