@@ -91,12 +91,12 @@ export default {
           let line = this.japaneseText[this.currentLine][1].trim()
           if (line) {
             let test = line;
-            console.log(test)
+            // console.log(test)
             this.$refs.output.innerHTML = test.trim()
           }
         } else {
           this.$refs.output.innerHTML = "Translation unavailable"
-          console.log(this.japaneseText[this.currentLine])
+          // console.log(this.japaneseText[this.currentLine])
         }
       } else {
         this.$refs.output.innerHTML = this.japaneseText[this.currentLine][0].trim()
@@ -114,8 +114,8 @@ export default {
             period = "."
           if (this.japaneseText.trim().length > 600) {
             let index = this.japaneseText.trim().indexOf(period, 600) + 1
-            console.log(this.japaneseText.trim())
-            console.log(this.japaneseText.trim().indexOf(period, 600))
+            // console.log(this.japaneseText.trim())
+            // console.log(this.japaneseText.trim().indexOf(period, 600))
             if (index == 0) {
               index = this.japaneseText.trim().lastIndexOf(period) + 1
               if (index == 0) {
@@ -147,8 +147,8 @@ export default {
             this.backupText = ""
           }
         }
-        console.log(textToTranslate)
-        console.log(this.backupText)
+        // console.log(textToTranslate)
+        // console.log(this.backupText)
         if (textToTranslate == "") {
           return -1
         }
@@ -157,8 +157,8 @@ export default {
           let newJapaneseText = [];
           for (let i = 0; i < this.japaneseText.length; i++) {
             let line = this.japaneseText[i]
-            console.log(line[0])
-            console.log(line[1])
+            // console.log(line[0])
+            // console.log(line[1])
             let newLine = []
             newLine.push(line[0].trim())
             this.getFurigana(line[1].trim()).then(result => {
@@ -179,8 +179,8 @@ export default {
           let newJapaneseText = [];
           for (let i = 0; i < this.japaneseText.length; i++) {
             let line = this.japaneseText[i]
-            console.log(line[0])
-            console.log(line[1])
+            // console.log(line[0])
+            // console.log(line[1])
             let newLine = []
             newLine[1] = line[1].trim()
             this.getFurigana(line[0].trim()).then(result => {
@@ -212,8 +212,8 @@ export default {
       const json = await result.json();
 
       try {
-        console.log(json);
-        console.log(json[0]);
+        // console.log(json);
+        // console.log(json[0]);
         this.sourceLanguage = json[2]
         return json[0];
       } catch (error) {
@@ -222,8 +222,7 @@ export default {
     },
     async getFurigana(text) {
       if (!text) return
-      console.log(text)
-      return await fetch("http://127.0.0.1:4324/get_furigana", {
+      return await fetch("https://demo6.lincolnnguyen18.com/get_furigana", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -234,7 +233,7 @@ export default {
       })
       .then(res => res.json())
       .then(data => {
-        console.log(data)
+        // console.log(data)
         return data.result;
       })
       // return text
@@ -305,12 +304,13 @@ export default {
       }
     });
     // print window url
-    console.log(window.location.href)
+    // console.log(window.location.href)
     // get query argument 'text' form url
     let text = params.text
-    console.log(text)
+    // console.log(text)
     if (text) {
       this.$refs.textarea.value = text
+      this.japaneseText = text
     }
   },
   components: { Loading }

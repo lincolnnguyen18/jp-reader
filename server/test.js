@@ -1,6 +1,6 @@
 const fetch = require('node-fetch');
 
-fetch("http://localhost:1237/get_furigana", {
+fetch("https://demo6.lincolnnguyen18.com/get_furigana", {
   method: "POST",
   headers: {
     "Content-Type": "application/json"
