@@ -391,6 +391,9 @@ textarea {
   user-select: none;
   font-size: 16px;
 }
+.parse-button:hover {
+  background-color: #333;
+}
 .bottom {
   display: flex;
   align-items: center;
