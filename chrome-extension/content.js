@@ -67,16 +67,21 @@ const clickEvent = (e) => {
     console.log(url);
     // open url in new tab
     window.open(url, '_blank');
+    element.style.backgroundColor = 'gray';
+    setTimeout(() => {
+        element.style.backgroundColor = oldBackground;
+        deactivate();
+    }, 300);
     // copy text to clipboard
-    navigator.clipboard.writeText(text).then(() => {
-        // alert("Text copied!");
-        // make background color of element gray for a second
-        element.style.backgroundColor = 'gray';
-        setTimeout(() => {
-            element.style.backgroundColor = oldBackground;
-            deactivate();
-        }, 300);
-    });
+    // navigator.clipboard.writeText(text).then(() => {
+    //     // alert("Text copied!");
+    //     // make background color of element gray for a second
+    //     element.style.backgroundColor = 'gray';
+    //     setTimeout(() => {
+    //         element.style.backgroundColor = oldBackground;
+    //         deactivate();
+    //     }, 300);
+    // });
 }
 
 const preventDefault = (e) => {
