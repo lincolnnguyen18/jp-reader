@@ -98,9 +98,9 @@ export default {
           sentence = this.japaneseText[this.currentLine][1]
         sourceLang = this.sourceLanguage;
       }
-      console.log(sentence)
-      console.log(this.currentLanguage, this.sourceLanguage)
-      console.log(sourceLang)
+      // console.log(sentence)
+      // console.log(this.currentLanguage, this.sourceLanguage)
+      // console.log(sourceLang)
 
       if (sourceLang == 'en')
         sourceLang = 'en-US'
@@ -108,7 +108,7 @@ export default {
       let backup = this.$refs.output.innerHTML;
       // if (this.sourceLang == "ja") {
         this.$refs.output.innerHTML = sentence;
-        console.log(this.$refs.output.innerHTML)
+        // console.log(this.$refs.output.innerHTML)
       // }
 
       // let supportedLangs = speechSynthesis.getVoices().map(function(voice) {
@@ -126,7 +126,7 @@ export default {
       u.onboundary = (e) => {
         // console.log(e)
         // print text from the start of the word to the end of the word
-        console.log(u.text.substring(e.charIndex, e.charIndex + e.charLength));
+        // console.log(u.text.substring(e.charIndex, e.charIndex + e.charLength));
         // this.$refs.output.innerText = u.text.substring(e.charIndex, e.charIndex + e.charLength);
         let textBeforeWord = u.text.substring(0, e.charIndex);
         let word = u.text.substring(e.charIndex, e.charIndex + e.charLength);
@@ -135,7 +135,7 @@ export default {
         // console.log(`${textBeforeWord}<span class="highlight">${word}</span>${textAfterWord}`)
       }
       u.onend = (e) => {
-        console.log("Finished in " + e.elapsedTime + " seconds.");
+        // console.log("Finished in " + e.elapsedTime + " seconds.");
           // console.log(this.$refs.output)
         this.$refs.output.innerHTML = backup;
         this.$refs.play.innerHTML = 'volume_mute';
