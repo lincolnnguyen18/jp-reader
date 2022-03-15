@@ -193,9 +193,12 @@ export default {
         this.$refs.output.innerHTML = this.japaneseText[this.currentLine][0].trim()
       }
     },
-    async translate() {
+    loadText() {
       this.inputBackup = this.$refs.textarea.value;
       this.japaneseText = this.$refs.textarea.value;
+      this.translate();
+    },
+    async translate() {
       document.getElementById('app').style.justifyContent = "center"
       if (this.mode == 'input' && this.japaneseText) {
         this.loading = true
@@ -449,7 +452,7 @@ export default {
         </div>
       </div>
     </div>
-    <button class="parse-button" ref="parse_button" @click="translate" >Parse</button>
+    <button class="parse-button" ref="parse_button" @click="loadText" >Parse</button>
   </div>
   <span class="material-icons-outlined play" @click="playSentence" v-if="mode != 'input'" ref="play">volume_mute</span>
   <span class="material-icons-outlined close" @click="closeOutput" v-if="mode != 'input'">close</span>
@@ -499,7 +502,7 @@ textarea {
 .output .highlight {
   border-bottom: none;
   margin-right: 0;
-  background-color: #efff5b;
+  background-color: yellow;
 }
 .parse-button {
   width: fit-content;
