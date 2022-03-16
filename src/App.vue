@@ -401,7 +401,7 @@ export default {
         }
       }
       // space
-      if ((e.key == "ArrowUp" || e.key == "ArrowDown" || e.key == 'k' || e.key == 'i') && !this.loading) {
+      if ((e.key == "ArrowUp" || e.key == "ArrowDown" || e.key == 'i') && !this.loading) {
         if (this.mode != "output") return;
         if (speechSynthesis.speaking) {
           speechSynthesis.cancel();
@@ -424,12 +424,12 @@ export default {
         }
         this.closeOutput();
       }
-      if (e.key == " " || e.key == "o") {
+      if (e.key == " " || e.key == "k") {
         if (this.mode != "output") return;
         this.playSentence();
       }
       // listen for v
-      if (e.key == "v" || e.key == "m") {
+      if (e.key == "v" || e.key == "o") {
         if (this.mode != "output") return;
         this.toggleVisibility();
       }
