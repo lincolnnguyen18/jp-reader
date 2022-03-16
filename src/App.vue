@@ -369,7 +369,7 @@ export default {
           })
         }
       }
-      if (e.key == "ArrowRight" && !this.loading) {
+      if ((e.key == "ArrowRight" || e.key == "l") && !this.loading) {
         if (this.mode != "output") return;
         if (speechSynthesis.speaking) {
           speechSynthesis.cancel();
@@ -388,7 +388,7 @@ export default {
           }
         }
       }
-      if (e.key == "ArrowLeft" && !this.loading) {
+      if ((e.key == "ArrowLeft" || e.key == "j") && !this.loading) {
         if (this.mode != "output") return;
         if (speechSynthesis.speaking) {
           speechSynthesis.cancel();
@@ -400,7 +400,7 @@ export default {
         }
       }
       // space
-      if ((e.key == "ArrowUp" || e.key == "ArrowDown") && !this.loading) {
+      if ((e.key == "ArrowUp" || e.key == "ArrowDown" || e.key == 'k') && !this.loading) {
         if (this.mode != "output") return;
         if (speechSynthesis.speaking) {
           speechSynthesis.cancel();
@@ -423,12 +423,12 @@ export default {
         }
         this.closeOutput();
       }
-      if (e.key == " ") {
+      if (e.key == " " || e.key == "p") {
         if (this.mode != "output") return;
         this.playSentence();
       }
       // listen for v
-      if (e.key == "v") {
+      if (e.key == "v" || e.key == "m") {
         if (this.mode != "output") return;
         this.toggleVisibility();
       }
