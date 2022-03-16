@@ -77,6 +77,13 @@ export default {
   //   }
   // },
   methods: {
+    toggleVisibility() {
+      if (this.mode == "input") {
+        return
+      }
+      this.$refs.output.style.visibility = this.$refs.output.style.visibility == "hidden" ? "visible" : "hidden";
+      this.$refs.show.innerHTML = this.$refs.show.innerHTML == 'visibility' ? 'visibility_off' : 'visibility';
+    },
     playSentence() {
       if (speechSynthesis.speaking) {
         speechSynthesis.cancel()
@@ -158,7 +165,7 @@ export default {
       setTimeout(() => {
         this.$refs.textarea.value = this.inputBackup;
         this.$refs.textarea.select();
-      }, 30)
+      }, 1)
     },
     openLanguages() {
       this.languagesOpen = true;
@@ -420,6 +427,11 @@ export default {
         if (this.mode != "output") return;
         this.playSentence();
       }
+      // listen for v
+      if (e.key == "v") {
+        if (this.mode != "output") return;
+        this.toggleVisibility();
+      }
     });
     // print window url
     // console.log(window.location.href)
@@ -454,6 +466,7 @@ export default {
     </div>
     <button class="parse-button" ref="parse_button" @click="loadText" >Parse</button>
   </div>
+  <span class="material-icons-outlined show" @click="toggleVisibility" v-if="mode != 'input'" ref="show">visibility</span>
   <span class="material-icons-outlined play" @click="playSentence" v-if="mode != 'input'" ref="play">volume_mute</span>
   <span class="material-icons-outlined close" @click="closeOutput" v-if="mode != 'input'">close</span>
 </template>
@@ -519,7 +532,7 @@ textarea {
 .parse-button:hover {
   background-color: #333;
 }
-.close:hover, .play:hover {
+.close:hover, .play:hover, .show:hover {
   color: #aaa;
 }
 .bottom {
@@ -531,6 +544,14 @@ textarea {
   position: fixed;
   top: 20px;
   right: 90px;
+  font-size: 30px;
+  user-select: none;
+  cursor: pointer;
+}
+.show {
+  position: fixed;
+  top: 20px;
+  right: 160px;
   font-size: 30px;
   user-select: none;
   cursor: pointer;
