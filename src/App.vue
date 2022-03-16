@@ -500,6 +500,7 @@ textarea {
   padding: 16px;
   font-size: 16px;
   font-family: 'Roboto', sans-serif;
+  border: 1px solid #808080;
 }
 .output {
   line-height: 2;
