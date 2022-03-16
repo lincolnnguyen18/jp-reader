@@ -105,6 +105,7 @@ export default {
           sentence = this.japaneseText[this.currentLine][1]
         sourceLang = this.sourceLanguage;
       }
+      sentence = sentence.trim();
       // console.log(sentence)
       // console.log(this.currentLanguage, this.sourceLanguage)
       // console.log(sourceLang)
