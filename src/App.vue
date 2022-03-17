@@ -1,5 +1,6 @@
 <script>
 import Loading from './components/Loading.vue'
+import _ from 'lodash'
 const getCookie = (key) => {
   let cookie = document.cookie.split('; ')
   for (let i = 0; i < cookie.length; i++) {
@@ -79,7 +80,10 @@ export default {
   // },
   methods: {
     toggleHelp() {
-      this.helpOpen = !this.helpOpen
+      // this.helpOpen = !this.helpOpen
+      _.debounce(() => {
+        this.helpOpen = !this.helpOpen
+      }, 100)()
     },
     toggleVisibility() {
       if (this.mode == "input") {
