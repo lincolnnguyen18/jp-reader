@@ -48,6 +48,7 @@ export default {
   data() {
     return {
       japaneseText: "",
+      helpOpen: false,
       noFuriganaText: "",
       mode: "input",
       currentLine: 0,
@@ -77,6 +78,10 @@ export default {
   //   }
   // },
   methods: {
+    toggleHelp() {
+      console.log('test')
+      this.helpOpen = !this.helpOpen
+    },
     toggleVisibility() {
       if (this.mode == "input") {
         return
@@ -167,6 +172,9 @@ export default {
         this.$refs.textarea.value = this.inputBackup;
         this.$refs.textarea.select();
       }, 1)
+      if (this.helpOpen) {
+        this.helpOpen = false;
+      }
     },
     openLanguages() {
       this.languagesOpen = true;
@@ -470,6 +478,33 @@ export default {
   <span class="material-icons-outlined show" @click="toggleVisibility" v-if="mode != 'input'" ref="show">visibility</span>
   <span class="material-icons-outlined play" @click="playSentence" v-if="mode != 'input'" ref="play">volume_mute</span>
   <span class="material-icons-outlined close" @click="closeOutput" v-if="mode != 'input'">close</span>
+  <span class="material-icons-outlined question" @mouseover="toggleHelp" @mouseout="toggleHelp" v-if="mode != 'input'">help_outline</span>
+  <div class="shortcuts" v-if="helpOpen">
+    <div class="shortcut">
+      <span class="key">Left arrow or J</span>
+      <span class="description">Navigate to previous sentence</span>
+    </div>
+    <div class="shortcut">
+      <span class="key">Right arrow or L</span>
+      <span class="description">Navigate to next sentence</span>
+    </div>
+    <div class="shortcut">
+      <span class="key">Up/down arrow or I</span>
+      <span class="description">Switch sentence language</span>
+    </div>
+    <div class="shortcut">
+      <span class="key">Space or K</span>
+      <span class="description">Start text to speech if available</span>
+    </div>
+    <div class="shortcut">
+      <span class="key">V or O</span>
+      <span class="description">Show and hide sentence</span>
+    </div>
+    <div class="shortcut">
+      <span class="key">Escape</span>
+      <span class="description">Close sentences</span>
+    </div>
+  </div>
 </template>
 
 <style>
@@ -534,7 +569,7 @@ textarea {
 .parse-button:hover {
   background-color: #333;
 }
-.close:hover, .play:hover, .show:hover {
+.close:hover, .play:hover, .show:hover, .question:hover {
   color: #aaa;
 }
 .bottom {
@@ -568,6 +603,35 @@ textarea {
   font-size: 30px;
   user-select: none;
   cursor: pointer;
+}
+.question {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  font-size: 30px;
+  user-select: none;
+  cursor: pointer;
+}
+.shortcuts {
+  position: absolute;
+  top: 70px;
+  left: 20px;
+  padding: 5px 10px;
+  background: white;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0px 4px 4px rgb(0 0 0 / 25%);
+  border: 1px solid #767676;
+  border-radius: 7px;
+}
+.shortcut {
+  display: grid;
+  grid-template-columns: 170px auto;
+  padding: 5px 0;
+  border-bottom: 1px solid #efefef;
+}
+.shortcut:last-child {
+  border-bottom: none;
 }
 .languages {
   display: flex;
