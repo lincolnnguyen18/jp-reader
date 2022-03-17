@@ -424,7 +424,7 @@ export default {
         }
         this.closeOutput();
       }
-      if (e.key == " " || e.key == "k") {
+      if ((e.key == " " || e.key == "k") && !this.loading) {
         if (this.mode != "output") return;
         this.playSentence();
       }
