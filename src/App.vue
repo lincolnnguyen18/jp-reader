@@ -180,10 +180,19 @@ export default {
       }
     },
     openLanguages() {
+      if (this.languagesOpen) {
+        this.languagesOpen = false;
+        return;
+      }
       this.languagesOpen = true;
-    },
-    toggleLanguages() {
-      this.languagesOpen = !this.languagesOpen;
+      console.log(this.currentLanguageFull)
+      setTimeout(() => {
+        let el = document.getElementById(this.currentLanguageFull);
+        el.scrollIntoView({
+          behavior: "auto",
+          block: "center"
+        });
+      }, 1)
     },
     closeLanguages() {
       this.languagesOpen = false;
@@ -467,7 +476,7 @@ export default {
     <div class="languages-wrapper">
       <div class="languages-label">Translate to:</div>
       <div class="languages">
-        <div class="toggle" @click="toggleLanguages" v-clickOutside="closeLanguages">
+        <div class="toggle" @click="openLanguages" v-clickOutside="closeLanguages">
           <span class="current-lang">{{ currentLanguageFull }}</span>
           <span class="material-icons-outlined">expand_more</span>
         </div>
