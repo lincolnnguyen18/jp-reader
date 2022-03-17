@@ -79,7 +79,6 @@ export default {
   // },
   methods: {
     toggleHelp() {
-      console.log('test')
       this.helpOpen = !this.helpOpen
     },
     toggleVisibility() {
