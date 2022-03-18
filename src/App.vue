@@ -84,7 +84,7 @@ export default {
     changeSpeed() {
       // round this.speed to nearest tenth
       this.speed = Math.round(this.speed * 10) / 10
-      console.log(this.speed)
+      // console.log(this.speed)
       if (speechSynthesis.speaking) {
         this.playingAuto = false
         speechSynthesis.cancel()
@@ -132,12 +132,9 @@ export default {
         }
       }
     },
-    toggleHelp() {
-      // this.helpOpen = !this.helpOpen
-      _.debounce(() => {
-        this.helpOpen = !this.helpOpen
-      }, 100)()
-    },
+    toggleHelp: _.debounce(function () {
+      this.helpOpen = true
+    }, 700),
     toggleVisibility() {
       if (this.mode == "input") {
         return
@@ -515,11 +512,17 @@ export default {
       }
       if (e.key == "[" && this.speed > 0.5 ) {
         this.speed -= 0.1;
-        _.debounce(this.changeSpeed, 100)
+        // this.changeSpeed();
+        _.debounce(() => {
+          this.changeSpeed()
+        }, 1000)
       }
       if (e.key == "]" && this.speed < 3.6 ) {
         this.speed += 0.1;
-        _.debounce(this.changeSpeed, 100)
+        // this.changeSpeed();
+        _.debounce(() => {
+          this.changeSpeed()
+        }, 1000)
       }
     });
     // print window url
@@ -559,7 +562,7 @@ export default {
   <span class="material-icons-outlined show" @click="toggleVisibility" v-if="mode != 'input'" ref="show">visibility</span>
   <!-- <span class="material-icons-outlined play" @click="playSentence" v-if="mode != 'input'" ref="play">volume_mute</span> -->
   <span class="material-icons-outlined close" @click="closeOutput" v-if="mode != 'input'">close</span>
-  <span class="material-icons-outlined question" @mouseover="toggleHelp" @mouseout="toggleHelp" v-if="mode != 'input'">help_outline</span>
+  <span class="material-icons-outlined question" @mouseover="toggleHelp" @mouseout="helpOpen = false" v-if="mode != 'input'">help_outline</span>
   <div class="slidecontainer" v-if="mode != 'input'">
     <span class="material-icons-outlined speed">speed</span>
     <input type="range" min="0.5" max="3.6" class="slider" v-model="speed" @change="changeSpeed" step="0.1">
