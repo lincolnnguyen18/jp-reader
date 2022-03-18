@@ -138,6 +138,12 @@ export default {
             this.playSentence();
           }, 700);
         }
+      } else {
+        if (this.playingAuto) {
+          this.playingAuto = false;
+          this.$refs.output.innerHTML = this.backup;
+          this.$refs.play_auto.innerHTML = "play_circle";
+        }
       }
     },
     openHelp() {
