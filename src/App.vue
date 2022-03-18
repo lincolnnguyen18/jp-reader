@@ -359,7 +359,9 @@ export default {
         }
         this.japaneseText = await this.translateText(textToTranslate)
         // filter out empty lines
+        console.log(this.japaneseText)
         this.japaneseText = this.japaneseText.filter(line => line[0].trim() != "" && line[1].trim() != "");
+        console.log(this.japaneseText)
         if (this.sourceLanguage == "ja") {
           let newJapaneseText = [];
           for (let i = 0; i < this.japaneseText.length; i++) {
@@ -422,8 +424,9 @@ export default {
     },
     async translateText(text) {
       // remove hash tags from text
-      text = text.replace('#', '')
-      const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${this.currentLanguage}&dt=t&q=` + encodeURI(text);
+      // text = text.replace('#', '')
+      // text = text.replace('&', '')
+      const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${this.currentLanguage}&dt=t&q=` + encodeURIComponent(text);
       const result = await fetch(url);
       const json = await result.json();
 
