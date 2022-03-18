@@ -135,9 +135,15 @@ export default {
         }
       }
     },
-    toggleHelp: _.debounce(function () {
-      this.helpOpen = true
-    }, 700),
+    openHelp() {
+      this.helpOpen = !this.helpOpen
+    },
+    closeHelp() {
+      this.helpOpen = false
+    },
+    // openHelp: _.debounce(function () {
+    //   this.helpOpen = true
+    // }, 300),
     toggleVisibility() {
       if (this.mode == "input") {
         return
@@ -559,43 +565,45 @@ export default {
   <span class="material-icons-outlined show" @click="toggleVisibility" v-if="mode != 'input'" ref="show">visibility</span>
   <!-- <span class="material-icons-outlined play" @click="playSentence" v-if="mode != 'input'" ref="play">volume_mute</span> -->
   <span class="material-icons-outlined close" @click="closeOutput" v-if="mode != 'input'">close</span>
-  <span class="material-icons-outlined question" @mouseover="toggleHelp" @mouseout="helpOpen = false" v-if="mode != 'input'">help_outline</span>
   <div class="slidecontainer" v-if="mode != 'input'">
     <span class="material-icons-outlined speed">speed</span>
     <input type="range" min="0.5" max="3.6" class="slider" v-model="speed" @change="changeSpeed" step="0.1">
   </div>
-  <div class="shortcuts" v-if="helpOpen">
-    <div class="shortcut">
-      <span class="key">Left arrow or J</span>
-      <span class="description">Navigate to previous sentence</span>
-    </div>
-    <div class="shortcut">
-      <span class="key">Right arrow or L</span>
-      <span class="description">Navigate to next sentence</span>
-    </div>
-    <div class="shortcut">
-      <span class="key">Up/down arrow or I</span>
-      <span class="description">Switch sentence language</span>
-    </div>
-    <div class="shortcut">
-      <span class="key">Space or K</span>
-      <span class="description">Start/stop text to speech if available for language</span>
-    </div>
-    <div class="shortcut">
-      <span class="key">V or O</span>
-      <span class="description">Show/hide sentence</span>
-    </div>
-    <div class="shortcut">
-      <span class="key">Left bracket</span>
-      <span class="description">Decrease text to speech speed</span>
-    </div>
-    <div class="shortcut">
-      <span class="key">Right bracket</span>
-      <span class="description">Increase text to speech speed</span>
-    </div>
-    <div class="shortcut">
-      <span class="key">Escape</span>
-      <span class="description">Close sentences</span>
+  <div class="help-stuff" v-clickOutside="closeHelp">
+    <span class="material-icons-outlined question" @click="openHelp" v-if="mode != 'input'">help_outline</span>
+    <div class="shortcuts" v-if="helpOpen">
+      <div class="shortcut">
+        <span class="key">Left arrow or J</span>
+        <span class="description">Navigate to previous sentence</span>
+      </div>
+      <div class="shortcut">
+        <span class="key">Right arrow or L</span>
+        <span class="description">Navigate to next sentence</span>
+      </div>
+      <div class="shortcut">
+        <span class="key">Up/down arrow or I</span>
+        <span class="description">Switch sentence language</span>
+      </div>
+      <div class="shortcut">
+        <span class="key">Space or K</span>
+        <span class="description">Start/stop text to speech if available for language</span>
+      </div>
+      <div class="shortcut">
+        <span class="key">V or O</span>
+        <span class="description">Show/hide sentence</span>
+      </div>
+      <div class="shortcut">
+        <span class="key">Left bracket</span>
+        <span class="description">Decrease text to speech speed</span>
+      </div>
+      <div class="shortcut">
+        <span class="key">Right bracket</span>
+        <span class="description">Increase text to speech speed</span>
+      </div>
+      <div class="shortcut">
+        <span class="key">Escape</span>
+        <span class="description">Close sentences</span>
+      </div>
     </div>
   </div>
 </template>
