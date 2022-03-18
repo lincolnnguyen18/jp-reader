@@ -125,7 +125,7 @@ export default {
         if (this.playingAuto) {
           this.playSentence();
         }
-      } else if (this.backupText != "") {
+      } else if (this.backupText != "" && !this.playingAuto) {
         // this.$refs.loading_icon.classList.remove("hidden")
         this.mode = "input"
         let flag = await this.translate()
