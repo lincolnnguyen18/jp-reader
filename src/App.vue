@@ -48,6 +48,7 @@ export default {
   },
   data() {
     return {
+      speed: 1.2,
       playingAuto: false,
       japaneseText: "",
       helpOpen: false,
@@ -80,6 +81,16 @@ export default {
   //   }
   // },
   methods: {
+    changeSpeed() {
+      // round this.speed to nearest tenth
+      this.speed = Math.round(this.speed * 10) / 10
+      console.log(this.speed)
+      if (speechSynthesis.speaking) {
+        this.playingAuto = false
+        speechSynthesis.cancel()
+        this.playAuto()
+      }
+    },
     playAuto() {
       if (!this.playingAuto) {
         this.playingAuto = true;
@@ -89,8 +100,8 @@ export default {
         this.playingAuto = false;
         if (speechSynthesis.speaking) {
          speechSynthesis.cancel()
-        }
         this.$refs.play_auto.innerHTML = "play_circle";
+        }
       }
     },
     nextLine: async function () {
@@ -103,11 +114,7 @@ export default {
         this.currentLine++;
         this.updateCurrentLine()
         if (this.playingAuto) {
-          console.log('START')
-          // setTimeout(() => {
-            console.log('END')
-            this.playSentence();
-          // }, 1);
+          this.playSentence();
         }
       } else if (this.backupText != "") {
         // this.$refs.loading_icon.classList.remove("hidden")
@@ -118,11 +125,9 @@ export default {
           // this.updateCurrentLine()
         }
         if (this.playingAuto) {
-          console.log('START')
           setTimeout(() => {
-            console.log('END')
             this.playSentence();
-          }, 1000);
+          }, 700);
         }
       }
     },
@@ -184,7 +189,9 @@ export default {
 
       u.text = sentence;
       u.lang = sourceLang;
-      u.rate = 1.2;
+      // u.rate = 0.5;
+      // u.rate = 3.6;
+      u.rate = this.speed;
       let spans = document.querySelector("#app > div span")
       u.onboundary = (e) => {
         // console.log(e)
@@ -501,6 +508,14 @@ export default {
         if (this.mode != "output") return;
         this.toggleVisibility();
       }
+      if (e.key == "[" && this.speed > 0.5 ) {
+        this.speed -= 0.1;
+        _.debounce(this.changeSpeed, 100)
+      }
+      if (e.key == "]" && this.speed < 3.6 ) {
+        this.speed += 0.1;
+        _.debounce(this.changeSpeed, 100)
+      }
     });
     // print window url
     // console.log(window.location.href)
@@ -540,6 +555,10 @@ export default {
   <!-- <span class="material-icons-outlined play" @click="playSentence" v-if="mode != 'input'" ref="play">volume_mute</span> -->
   <span class="material-icons-outlined close" @click="closeOutput" v-if="mode != 'input'">close</span>
   <span class="material-icons-outlined question" @mouseover="toggleHelp" @mouseout="toggleHelp" v-if="mode != 'input'">help_outline</span>
+  <div class="slidecontainer" v-if="mode != 'input'">
+    <span class="material-icons-outlined speed">speed</span>
+    <input type="range" min="0.5" max="3.6" class="slider" v-model="speed" @change="changeSpeed" step="0.1">
+  </div>
   <div class="shortcuts" v-if="helpOpen">
     <div class="shortcut">
       <span class="key">Left arrow or J</span>
@@ -560,6 +579,14 @@ export default {
     <div class="shortcut">
       <span class="key">V or O</span>
       <span class="description">Show/hide sentence</span>
+    </div>
+    <div class="shortcut">
+      <span class="key">Left bracket</span>
+      <span class="description">Decrease text to speech speed</span>
+    </div>
+    <div class="shortcut">
+      <span class="key">Right bracket</span>
+      <span class="description">Increase text to speech speed</span>
     </div>
     <div class="shortcut">
       <span class="key">Escape</span>
@@ -632,6 +659,10 @@ textarea {
 }
 .close:hover, .play:hover, .show:hover, .question:hover, .play_auto:hover {
   color: #aaa;
+}
+.close, .play, .show, .question, .play_auto, .speed {
+  color: #333;
+  z-index: 2;
 }
 .bottom {
   display: flex;
@@ -758,4 +789,61 @@ textarea {
 .language:focus {
   background-color: #e1e1e1;
 }
+.slidecontainer {
+  position: absolute;
+  width: 100%;
+  left: -22px;
+  top: 22px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  z-index: 0;
+}
+.slidecontainer span {
+  font-size: 30px;
+  user-select: none;
+}
+.slidecontainer input {
+  width: 300px;
+  appearance: none;
+  height: 5px;
+  background: #333;
+  /* box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.25); */
+  border-radius: 16px;
+  outline: none;
+}
+.slidecontainer input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  background: #000;
+  /* border: 1px solid #E0E0E0; */
+  box-sizing: border-box;
+  /* box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25); */
+  border-radius: 60px;
+}
+/* .slidecontainer input {
+  width: 300px;
+  appearance: none;
+  height: 7px;
+  background: #bbb;
+  box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 16px;
+  outline: none;
+}
+.slidecontainer input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 23px;
+  height: 23px;
+  cursor: pointer;
+  background: #fff;
+  border: 1px solid #E0E0E0;
+  box-sizing: border-box;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 60px;
+} */
 </style>
