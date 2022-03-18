@@ -46,11 +46,13 @@ export default {
       return this.langFulls[index]
     },
     progress: function () {
-      return this.currentLine / (this.japaneseText.length - 1) * 100
+      return (this.currentLine + 1) / this.japaneseText.length * 100
+      // return this.currentLine / (this.japaneseText.length - 1) * 100
     },
   },
   data() {
     return {
+      restarting: false,
       speed: 1.2,
       playingAuto: false,
       japaneseText: "",
@@ -93,9 +95,11 @@ export default {
     },
     restart: _.debounce(function () {
       if (speechSynthesis.speaking) {
+        this.restarting = true
         this.playingAuto = false
         speechSynthesis.cancel()
         this.playAuto()
+        this.restarting = false
       }
     }, 500),
     playAuto() {
@@ -192,7 +196,8 @@ export default {
       if (sourceLang == 'en')
         sourceLang = 'en-US'
 
-      this.backup = this.$refs.output.innerHTML;
+      if (!this.restarting)
+        this.backup = this.$refs.output.innerHTML;
       // if (this.sourceLang == "ja") {
         this.$refs.output.innerHTML = sentence;
         // console.log(this.$refs.output.innerHTML)
@@ -359,9 +364,9 @@ export default {
         }
         this.japaneseText = await this.translateText(textToTranslate)
         // filter out empty lines
-        console.log(this.japaneseText)
+        // console.log(this.japaneseText)
         this.japaneseText = this.japaneseText.filter(line => line[0].trim() != "" && line[1].trim() != "");
-        console.log(this.japaneseText)
+        // console.log(this.japaneseText)
         if (this.sourceLanguage == "ja") {
           let newJapaneseText = [];
           for (let i = 0; i < this.japaneseText.length; i++) {
