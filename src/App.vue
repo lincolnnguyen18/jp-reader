@@ -48,6 +48,7 @@ export default {
   },
   data() {
     return {
+      playingAuto: false,
       japaneseText: "",
       helpOpen: false,
       noFuriganaText: "",
@@ -79,6 +80,52 @@ export default {
   //   }
   // },
   methods: {
+    playAuto() {
+      if (!this.playingAuto) {
+        this.playingAuto = true;
+        this.playSentence();
+        this.$refs.play_auto.innerHTML = "stop_circle";
+      } else {
+        this.playingAuto = false;
+        if (speechSynthesis.speaking) {
+         speechSynthesis.cancel()
+        }
+        this.$refs.play_auto.innerHTML = "play_circle";
+      }
+    },
+    nextLine: async function () {
+      if (this.mode != "output") return;
+      if (speechSynthesis.speaking) {
+        speechSynthesis.cancel();
+        return
+      }
+      if (this.currentLine < this.japaneseText.length - 1) {
+        this.currentLine++;
+        this.updateCurrentLine()
+        if (this.playingAuto) {
+          console.log('START')
+          // setTimeout(() => {
+            console.log('END')
+            this.playSentence();
+          // }, 1);
+        }
+      } else if (this.backupText != "") {
+        // this.$refs.loading_icon.classList.remove("hidden")
+        this.mode = "input"
+        let flag = await this.translate()
+        if (flag != -1) {
+          this.currentLine = 0
+          // this.updateCurrentLine()
+        }
+        if (this.playingAuto) {
+          console.log('START')
+          setTimeout(() => {
+            console.log('END')
+            this.playSentence();
+          }, 1000);
+        }
+      }
+    },
     toggleHelp() {
       // this.helpOpen = !this.helpOpen
       _.debounce(() => {
@@ -97,7 +144,7 @@ export default {
         speechSynthesis.cancel()
         return;
       }
-      this.$refs.play.innerHTML = 'volume_up';
+      // this.$refs.play.innerHTML = 'volume_up';
       let sentence;
       let sourceLang;
       if (this.language == "en") {
@@ -153,8 +200,16 @@ export default {
       u.onend = (e) => {
         // console.log("Finished in " + e.elapsedTime + " seconds.");
           // console.log(this.$refs.output)
-        this.$refs.output.innerHTML = backup;
-        this.$refs.play.innerHTML = 'volume_mute';
+        if (!this.playingAuto) {
+          this.$refs.output.innerHTML = backup;
+        }
+        // this.$refs.play.innerHTML = 'volume_mute';
+        setTimeout(() => {
+          // if (this.playingAuto && this.currentLine < this.japaneseText.length - 1) {
+          if (this.playingAuto) {
+            this.nextLine();
+          }
+        }, 100)
       }
       // var u = new SpeechSynthesisUtterance();
       // u.text = sentence;
@@ -297,6 +352,11 @@ export default {
                 setTimeout(() => {
                   this.updateCurrentLine()
                   this.loading = false
+                  // setTimeout(() => {
+                  //   if (this.playingAuto) {
+                  //     this.playSentence();
+                  //   }
+                  // }, 500)
                   document.getElementById('app').style.justifyContent = "flex-start"
                 }, 100)
               }
@@ -391,27 +451,12 @@ export default {
         }
       }
       if ((e.key == "ArrowRight" || e.key == "l") && !this.loading) {
-        if (this.mode != "output") return;
-        if (speechSynthesis.speaking) {
-          speechSynthesis.cancel();
-          return
-        }
-        if (this.currentLine < this.japaneseText.length - 1) {
-          this.currentLine++;
-          this.updateCurrentLine()
-        } else if (this.backupText != "") {
-          // this.$refs.loading_icon.classList.remove("hidden")
-          this.mode = "input"
-          let flag = await this.translate()
-          if (flag != -1) {
-            this.currentLine = 0
-            // this.updateCurrentLine()
-          }
-        }
+        this.nextLine()
       }
       if ((e.key == "ArrowLeft" || e.key == "j") && !this.loading) {
         if (this.mode != "output") return;
         if (speechSynthesis.speaking) {
+          this.playingAuto = false
           speechSynthesis.cancel();
           return
         }
@@ -424,6 +469,7 @@ export default {
       if ((e.key == "ArrowUp" || e.key == "ArrowDown" || e.key == 'i') && !this.loading) {
         if (this.mode != "output") return;
         if (speechSynthesis.speaking) {
+          this.playingAuto = false
           speechSynthesis.cancel();
           return
         }
@@ -439,6 +485,7 @@ export default {
       if (e.key == "Escape") {
         if (this.mode != "output") return;
         if (speechSynthesis.speaking) {
+          this.playingAuto = false
           speechSynthesis.cancel();
           return
         }
@@ -446,7 +493,8 @@ export default {
       }
       if ((e.key == " " || e.key == "k") && !this.loading) {
         if (this.mode != "output") return;
-        this.playSentence();
+        this.playAuto();
+        // this.playSentence();
       }
       // listen for v
       if (e.key == "v" || e.key == "o") {
@@ -487,8 +535,9 @@ export default {
     </div>
     <button class="parse-button" ref="parse_button" @click="loadText" >Parse</button>
   </div>
+  <span class="material-icons-outlined play_auto" v-if="mode != 'input'" @click="playAuto" ref="play_auto">play_circle</span>
   <span class="material-icons-outlined show" @click="toggleVisibility" v-if="mode != 'input'" ref="show">visibility</span>
-  <span class="material-icons-outlined play" @click="playSentence" v-if="mode != 'input'" ref="play">volume_mute</span>
+  <!-- <span class="material-icons-outlined play" @click="playSentence" v-if="mode != 'input'" ref="play">volume_mute</span> -->
   <span class="material-icons-outlined close" @click="closeOutput" v-if="mode != 'input'">close</span>
   <span class="material-icons-outlined question" @mouseover="toggleHelp" @mouseout="toggleHelp" v-if="mode != 'input'">help_outline</span>
   <div class="shortcuts" v-if="helpOpen">
@@ -506,11 +555,11 @@ export default {
     </div>
     <div class="shortcut">
       <span class="key">Space or K</span>
-      <span class="description">Start text to speech if available</span>
+      <span class="description">Start/stop text to speech if available for language</span>
     </div>
     <div class="shortcut">
       <span class="key">V or O</span>
-      <span class="description">Show and hide sentence</span>
+      <span class="description">Show/hide sentence</span>
     </div>
     <div class="shortcut">
       <span class="key">Escape</span>
@@ -581,7 +630,7 @@ textarea {
 .parse-button:hover {
   background-color: #333;
 }
-.close:hover, .play:hover, .show:hover, .question:hover {
+.close:hover, .play:hover, .show:hover, .question:hover, .play_auto:hover {
   color: #aaa;
 }
 .bottom {
@@ -601,6 +650,14 @@ textarea {
   position: fixed;
   top: 20px;
   right: 160px;
+  font-size: 30px;
+  user-select: none;
+  cursor: pointer;
+}
+.play_auto {
+  position: fixed;
+  top: 20px;
+  right: 90px;
   font-size: 30px;
   user-select: none;
   cursor: pointer;
