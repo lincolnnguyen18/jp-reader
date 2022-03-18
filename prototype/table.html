@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Two+Tone|Material+Icons+Round|Material+Icons+Sharp');
+    html {
+      font-family: 'Roboto', sans-serif;
+      font-size: 16px;
+    }
+    .container {
+      width: 1200px;
+      height: 600px;
+      margin: 0 auto;
+    }
+    #top {
+      /* overflow-x : auto; */
+      overflow-x: hidden;
+      left: 0;
+      /* display: flex; */
+      /* background: green; */
+      display: grid;
+      grid-template-columns: repeat(15, 200px);
+      padding-left: 50px;
+      margin-right: 100px;
+      /* background: red; */
+      font-weight: bold;
+    }
+    #top-wrapper {
+      position: relative;
+    }
+    .fadeout {
+      position: absolute;
+      top: 0;
+      width: 50px;
+      height: 100%;
+      background: blue;
+    }
+    .fadeout.right {
+      right: 100px;
+      background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%);
+    }
+    .fadeout.left {
+      left: 0px;
+      background: linear-gradient(to left, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%);
+    }
+    #bottom {
+      overflow: auto;
+      height: 500px;
+      padding-left: 40px;
+    }
+    .bottom-wrapper {
+      box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.25);
+      border-radius: 7px;
+      /* background: blue; */
+      overflow: hidden;
+      padding: 10px;
+      padding-bottom: 3px;
+    }
+    .row {
+      display: grid;
+      grid-template-columns: repeat(15, 200px);
+      background: white;
+      width: 3000px;
+    }
+    .container {
+      display: flex;
+      flex-direction: column;
+    }
+    .row:hover {
+      background: #f5f5f5;
+    }
+    .buttons {
+      /* background: red; */
+      position: absolute;
+      right: 0;
+      top: 0;
+      width: 90px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .buttons span {
+      user-select: none;
+      cursor: pointer;
+    }
+    .buttons span:hover {
+      color: #bbb;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="top-wrapper">
+      <div id="top">
+        <p>Content Here</p>
+        <p>Content Here</p>
+        <p>Content Here</p>
+        <p>Content Here</p>
+        <p>Content Here</p>
+        <p>Content Here</p>
+        <p>Content Here</p>
+        <p>Content Here</p>
+        <p>Content Here</p>
+        <p>Content Here</p>
+        <p>Content Here</p>
+        <p>Content Here</p>
+        <p>Content Here</p>
+        <p>Content Here</p>
+        <p>Content Here</p>
+      </div>
+      <div class="fadeout right"></div>
+      <div class="fadeout left"></div>
+      <div class="buttons">
+        <span class="material-icons-outlined">refresh</span>
+      </div>
+    </div>
+    <div class="bottom-wrapper">
+      <div id="bottom">
+        <div class="row">
+          <p>Content Here</p>
+          <p>Content Here</p>
+          <p>Content Here</p>
+          <p>Content Here</p>
+          <p>Content Here</p>
+          <p>Content Here</p>
+          <p>Content Here</p>
+          <p>Content Here</p>
+          <p>Content Here</p>
+          <p>Content Here</p>
+          <p>Content Here</p>
+          <p>Content Here</p>
+          <p>Content Here</p>
+          <p>Content Here</p>
+          <p>Content Here</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    let topDiv = document.querySelector('#top');
+    let bottomDiv = document.querySelector('#bottom');
+    bottomDiv.addEventListener('scroll', function(e) {
+      topDiv.scrollLeft = bottomDiv.scrollLeft;
+    });
+    topDiv.addEventListener('scroll', function(e) {
+      bottomDiv.scrollLeft = topDiv.scrollLeft;
+    });
+    // on page mount
+    document.addEventListener('DOMContentLoaded', function(e) {
+      let html = bottomDiv.innerHTML;
+      let htmlRepeat = '';
+      for (let i = 0; i < 30; i++) {
+        htmlRepeat += html;
+      }
+      bottomDiv.innerHTML = htmlRepeat;
+    });
+  </script>
+</body>
+</html>
