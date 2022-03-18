@@ -46,7 +46,7 @@ export default {
       return this.langFulls[index]
     },
     progress: function () {
-      return this.currentLine / this.japaneseText.length * 100
+      return this.currentLine / (this.japaneseText.length - 1) * 100
     },
   },
   data() {
