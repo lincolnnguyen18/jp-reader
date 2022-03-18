@@ -352,6 +352,8 @@ export default {
           return -1
         }
         this.japaneseText = await this.translateText(textToTranslate)
+        // filter out empty lines
+        this.japaneseText = this.japaneseText.filter(line => line[0].trim() != "" && line[1].trim() != "");
         if (this.sourceLanguage == "ja") {
           let newJapaneseText = [];
           for (let i = 0; i < this.japaneseText.length; i++) {
