@@ -61,6 +61,7 @@ export default {
       language: "ja",
       currentLineText: "",
       backupText: "",
+      backup: "",
       inputBackup: "",
       loading: false,
       langFulls: ["Afrikaans", "Albanian", "Amharic", "Arabic", "Armenian", "Azerbaijani", "Basque", "Belarusian", "Bengali", "Bosnian", "Bulgarian", "Catalan", "Cebuano", "Chinese", "Corsican", "Croatian", "Czech", "Danish", "Dutch", "English", "Esperanto", "Estonian", "Finnish", "French", "Frisian", "Galician", "Georgian", "German", "Greek", "Gujarati", "Haitian Creole", "Hausa", "Hawaiian", "Hebrew", "Hindi", "Hmong", "Hungarian", "Icelandic", "Igbo", "Indonesian", "Irish", "Italian", "Japanese", "Javanese", "Kannada", "Kazakh", "Khmer", "Kinyarwanda", "Korean", "Kurdish", "Kyrgyz", "Lao", "Latvian", "Lithuanian", "Luxembourgish", "Macedonian", "Malagasy", "Malay", "Malayalam", "Maltese", "Maori", "Marathi", "Mongolian", "Myanmar (Burmese)", "Nepali", "Norwegian", "Nyanja (Chichewa)", "Odia (Oriya)", "Pashto", "Persian", "Polish", "Portuguese (Portugal, Brazil)", "Punjabi", "Romanian", "Russian", "Samoan", "Scots Gaelic", "Serbian", "Sesotho", "Shona", "Sindhi", "Sinhala (Sinhalese)", "Slovak", "Slovenian", "Somali", "Spanish", "Sundanese", "Swahili", "Swedish", "Tagalog (Filipino)", "Tajik", "Tamil", "Tatar", "Telugu", "Thai", "Turkish", "Turkmen", "Ukrainian", "Urdu", "Uyghur", "Uzbek", "Vietnamese", "Welsh", "Xhosa", "Yiddish", "Yoruba", "Zulu"],
@@ -105,9 +106,10 @@ export default {
       } else {
         this.playingAuto = false;
         if (speechSynthesis.speaking) {
-         speechSynthesis.cancel()
-        this.$refs.play_auto.innerHTML = "play_circle";
+          speechSynthesis.cancel()
+          this.$refs.play_auto.innerHTML = "play_circle";
         }
+        this.$refs.output.innerHTML = this.backup;
       }
     },
     nextLine: async function () {
@@ -184,7 +186,7 @@ export default {
       if (sourceLang == 'en')
         sourceLang = 'en-US'
 
-      let backup = this.$refs.output.innerHTML;
+      this.backup = this.$refs.output.innerHTML;
       // if (this.sourceLang == "ja") {
         this.$refs.output.innerHTML = sentence;
         // console.log(this.$refs.output.innerHTML)
@@ -219,7 +221,7 @@ export default {
         // console.log("Finished in " + e.elapsedTime + " seconds.");
           // console.log(this.$refs.output)
         if (!this.playingAuto) {
-          this.$refs.output.innerHTML = backup;
+          this.$refs.output.innerHTML = this.backup;
         }
         // this.$refs.play.innerHTML = 'volume_mute';
         setTimeout(() => {
