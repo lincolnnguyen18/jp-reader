@@ -44,7 +44,10 @@ export default {
       // get index of currentLanguage in langFulls
       var index = this.langAbbrevs.indexOf(this.currentLanguage)
       return this.langFulls[index]
-    }
+    },
+    progress: function () {
+      return this.currentLine / this.japaneseText.length * 100
+    },
   },
   data() {
     return {
@@ -470,6 +473,7 @@ export default {
       }
       if ((e.key == "ArrowLeft" || e.key == "j") && !this.loading) {
         if (this.mode != "output") return;
+        // console.log(this.currentLine / this.japaneseText.length)
         if (speechSynthesis.speaking) {
           this.playingAuto = false
           speechSynthesis.cancel();
@@ -543,6 +547,7 @@ export default {
 </script>
 
 <template>
+  <div class="progress" :style="{width: progress + '%'}" v-if="this.mode != 'input'"></div>
   <Loading ref="loading_icon" v-if="loading"></Loading>
   <textarea v-if="mode == 'input'" cols="40" rows="25" placeholder="Enter text to translate here" ref="textarea" autofocus></textarea>
   <div v-else ref="output" class="output" :class="{'hidden': loading}"></div>
@@ -859,4 +864,14 @@ textarea {
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   border-radius: 60px;
 } */
+.progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: #000;
+  /* opacity: 0.5; */
+  z-index: 1;
+}
 </style>
