@@ -714,7 +714,7 @@ textarea {
 }
 .shortcuts {
   position: absolute;
-  top: 70px;
+  top: 60px;
   left: 20px;
   padding: 5px 10px;
   background: white;
