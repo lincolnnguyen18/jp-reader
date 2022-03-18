@@ -108,6 +108,7 @@ export default {
       if (this.mode != "output") return;
       if (speechSynthesis.speaking) {
         speechSynthesis.cancel();
+        this.$refs.play_auto.innerHTML = "play_circle";
         return
       }
       if (this.currentLine < this.japaneseText.length - 1) {
@@ -147,6 +148,7 @@ export default {
     playSentence() {
       if (speechSynthesis.speaking) {
         speechSynthesis.cancel()
+        this.$refs.play_auto.innerHTML = "play_circle";
         return;
       }
       // this.$refs.play.innerHTML = 'volume_up';
@@ -465,6 +467,7 @@ export default {
         if (speechSynthesis.speaking) {
           this.playingAuto = false
           speechSynthesis.cancel();
+          this.$refs.play_auto.innerHTML = "play_circle";
           return
         }
         if (this.currentLine > 0) {
@@ -478,6 +481,7 @@ export default {
         if (speechSynthesis.speaking) {
           this.playingAuto = false
           speechSynthesis.cancel();
+          this.$refs.play_auto.innerHTML = "play_circle";
           return
         }
         if (this.language == "ja") {
@@ -494,6 +498,7 @@ export default {
         if (speechSynthesis.speaking) {
           this.playingAuto = false
           speechSynthesis.cancel();
+          this.$refs.play_auto.innerHTML = "play_circle";
           return
         }
         this.closeOutput();
