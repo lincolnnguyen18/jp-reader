@@ -85,12 +85,15 @@ export default {
       // round this.speed to nearest tenth
       this.speed = Math.round(this.speed * 10) / 10
       // console.log(this.speed)
+      this.restart()
+    },
+    restart: _.debounce(function () {
       if (speechSynthesis.speaking) {
         this.playingAuto = false
         speechSynthesis.cancel()
         this.playAuto()
       }
-    },
+    }, 500),
     playAuto() {
       if (!this.playingAuto) {
         this.playingAuto = true;
@@ -512,17 +515,11 @@ export default {
       }
       if (e.key == "[" && this.speed > 0.5 ) {
         this.speed -= 0.1;
-        // this.changeSpeed();
-        _.debounce(() => {
-          this.changeSpeed()
-        }, 1000)
+        this.changeSpeed();
       }
       if (e.key == "]" && this.speed < 3.6 ) {
         this.speed += 0.1;
-        // this.changeSpeed();
-        _.debounce(() => {
-          this.changeSpeed()
-        }, 1000)
+        this.changeSpeed();
       }
     });
     // print window url
