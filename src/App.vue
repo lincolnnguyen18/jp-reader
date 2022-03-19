@@ -257,10 +257,10 @@ export default {
       this.currentLine = 0;
       this.backupText = "";
       document.getElementById('app').style.justifyContent = "center"
-      setTimeout(() => {
-        this.$refs.textarea.value = this.inputBackup;
-        this.$refs.textarea.select();
-      }, 1)
+      // setTimeout(() => {
+      //   this.$refs.textarea.value = this.inputBackup;
+      //   this.$refs.textarea.select();
+      // }, 1)
       if (this.helpOpen) {
         this.helpOpen = false;
       }
@@ -308,7 +308,7 @@ export default {
       }
     },
     loadText() {
-      this.inputBackup = this.$refs.textarea.value;
+      // this.inputBackup = this.$refs.textarea.value;
       this.japaneseText = this.$refs.textarea.value;
       this.translate();
     },
@@ -556,7 +556,7 @@ export default {
     let text = params.text
     // console.log(text)
     if (text) {
-      this.$refs.textarea.value = text
+      // this.$refs.textarea.value = text
       this.japaneseText = text
     }
   },
@@ -567,8 +567,8 @@ export default {
 <template>
   <div class="progress" :style="{width: progress + '%'}" v-if="this.mode != 'input'"></div>
   <Loading ref="loading_icon" v-if="loading"></Loading>
-  <textarea v-if="mode == 'input'" cols="40" rows="25" placeholder="Enter text to translate here" ref="textarea" autofocus></textarea>
-  <div v-else ref="output" class="output" :class="{'hidden': loading}"></div>
+  <textarea v-show="mode == 'input'" cols="40" rows="25" placeholder="Enter text to translate here" ref="textarea" autofocus></textarea>
+  <div v-show="mode != 'input'" ref="output" class="output" :class="{'hidden': loading}"></div>
   <div class="bottom" v-if="mode == 'input'">
     <div class="languages-wrapper">
       <div class="languages-label">Translate to:</div>
