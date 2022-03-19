@@ -257,10 +257,10 @@ export default {
       this.currentLine = 0;
       this.backupText = "";
       document.getElementById('app').style.justifyContent = "center"
-      // setTimeout(() => {
+      setTimeout(() => {
       //   this.$refs.textarea.value = this.inputBackup;
-      //   this.$refs.textarea.select();
-      // }, 1)
+        this.$refs.textarea.select();
+      }, 1)
       if (this.helpOpen) {
         this.helpOpen = false;
       }
