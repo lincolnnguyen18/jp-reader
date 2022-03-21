@@ -52,6 +52,12 @@ export default {
   },
   data() {
     return {
+      primary1: '#000',
+      primary2: '#333',
+      secondary: '#fff',
+      highlightText: '#000',
+      highlightColor: 'yellow',
+      border: '#efefef',
       restarting: false,
       speed: 1.2,
       playingAuto: false,
@@ -70,7 +76,8 @@ export default {
       langAbbrevs: ["af", "sq", "am", "ar", "hy", "az", "eu", "be", "bn", "bs", "bg", "ca", "ceb", "zh", "co", "hr", "cs", "da", "nl", "en-US", "eo", "et", "fi", "fr", "fy", "gl", "ka", "de", "el", "gu", "ht", "ha", "haw", "he", "hi", "hmn", "hu", "is", "ig", "id", "ga", "it", "ja", "jv", "kn", "kk", "km", "rw", "ko", "ku", "ky", "lo", "lv", "lt", "lb", "mk", "mg", "ms", "ml", "mt", "mi", "mr", "mn", "my", "ne", "no", "ny", "or", "ps", "fa", "pl", "pt", "pa", "ro", "ru", "sm", "gd", "sr", "st", "sn", "sd", "si", "sk", "sl", "so", "es", "su", "sw", "sv", "tl", "tg", "ta", "tt", "te", "th", "tr", "tk", "uk", "ur", "ug", "uz", "vi", "cy", "xh", "yi", "yo", "zu"],
       currentLanguage: "en-US",
       languagesOpen: false,
-      sourceLanguage: null
+      sourceLanguage: null,
+      darkModeOn: false
     }
   },
   // computed: {
@@ -87,6 +94,32 @@ export default {
   //   }
   // },
   methods: {
+    toggleDarkMode() {
+      this.darkModeOn = !this.darkModeOn
+      if (this.darkModeOn) {
+        this.$refs.dark_mode.classList.remove("material-icons-outlined")
+        this.$refs.dark_mode.classList.add("material-icons-round")
+        this.primary1 = '#fff'
+        this.primary2 = '#fff'
+        this.secondary = '#000'
+        this.highlightText = '#fff'
+        this.highlightColor = 'purple'
+        this.border = '#6a6a6a'
+        document.body.style.background = this.secondary
+        document.body.style.color = this.primary1
+      } else {
+        this.$refs.dark_mode.classList.remove("material-icons-round")
+        this.$refs.dark_mode.classList.add("material-icons-outlined")
+        this.primary1 = '#000'
+        this.primary2 = '#333'
+        this.secondary = '#fff'
+        this.highlightText = '#000'
+        this.highlightColor = 'yellow'
+        this.border = '#efefef'
+        document.body.style.background = this.secondary
+        document.body.style.color = this.primary1
+      }
+    },
     changeSpeed() {
       // round this.speed to nearest tenth
       this.speed = Math.round(this.speed * 10) / 10
@@ -152,6 +185,12 @@ export default {
     },
     openHelp() {
       this.helpOpen = !this.helpOpen
+      setTimeout(() => {
+        if (this.darkModeOn)
+          document.querySelector('.shortcuts').classList.add("dark")
+        else
+          document.querySelector('.shortcuts').classList.remove("dark")
+      }, 1)
     },
     closeHelp() {
       this.helpOpen = false
@@ -520,6 +559,9 @@ export default {
           this.updateCurrentLine();
         }
       }
+      if (e.key == "d" && this.mode == "output") {
+        this.toggleDarkMode();
+      }
       // escape
       if (e.key == "Escape") {
         if (this.mode != "output") return;
@@ -528,6 +570,9 @@ export default {
           speechSynthesis.cancel();
           this.$refs.play_auto.innerHTML = "play_circle";
           return
+        }
+        if (this.darkModeOn) {
+          this.toggleDarkMode()
         }
         this.closeOutput();
       }
@@ -590,10 +635,11 @@ export default {
   <span class="material-icons-outlined close" @click="closeOutput" v-if="mode != 'input'">close</span>
   <div class="slidecontainer" v-if="mode != 'input'">
     <span class="material-icons-outlined speed">speed</span>
-    <input type="range" min="0.5" max="3.6" class="slider" v-model="speed" @change="changeSpeed" step="0.1">
+    <input type="range" min="0.5" max="3.6" class="slider" v-model="speed" @change="changeSpeed" step="0.1" ref="slider">
   </div>
   <div class="help-stuff" v-clickOutside="closeHelp">
     <span class="material-icons-outlined question" @click="openHelp" v-if="mode != 'input'">help_outline</span>
+    <span class="material-icons-outlined dark_mode" ref="dark_mode" @click="toggleDarkMode" v-if="mode != 'input'">dark_mode</span>
     <div class="shortcuts" v-if="helpOpen">
       <div class="shortcut">
         <span class="key">Left arrow or J</span>
@@ -626,6 +672,10 @@ export default {
       <div class="shortcut">
         <span class="key">Escape</span>
         <span class="description">Close sentences</span>
+      </div>
+      <div class="shortcut">
+        <span class="key">D</span>
+        <span class="description">Toggle dark mode on/off</span>
       </div>
     </div>
   </div>
@@ -670,14 +720,25 @@ textarea {
   font-size: 22px;
 }
 .output span {
-  border-bottom: 1px solid black;
+  border-bottom: 1px solid v-bind('primary1');
   margin-right: 10px;
 }
 .output .highlight {
   border-bottom: none;
   margin-right: 0;
-  background-color: yellow;
+  background-color: v-bind('highlightColor');
+  color: v-bind('highlightText');
 }
+/* .dark {
+  background: #000!important;
+  color: #fff!important;
+}
+.dark2 {
+  background: #fff!important;
+}
+.dark2::-webkit-slider-thumb {
+  background: #fff!important;
+} */
 .parse-button {
   width: fit-content;
   align-self: flex-end;
@@ -693,11 +754,11 @@ textarea {
 .parse-button:hover {
   background-color: #333;
 }
-.close:hover, .play:hover, .show:hover, .question:hover, .play_auto:hover {
+.close:hover, .play:hover, .show:hover, .question:hover, .play_auto:hover, .dark_mode:hover {
   color: #aaa;
 }
-.close, .play, .show, .question, .play_auto, .speed {
-  color: #333;
+.close, .play, .show, .question, .play_auto, .speed, .dark_mode {
+  color: v-bind('primary2');
   z-index: 2;
 }
 .bottom {
@@ -729,9 +790,6 @@ textarea {
   user-select: none;
   cursor: pointer;
 }
-.isPlaying {
-  color: #aaa;
-}
 .close {
   position: fixed;
   top: 20px;
@@ -748,12 +806,20 @@ textarea {
   user-select: none;
   cursor: pointer;
 }
+.dark_mode {
+  position: fixed;
+  top: 20px;
+  left: 90px;
+  font-size: 30px;
+  user-select: none;
+  cursor: pointer;
+}
 .shortcuts {
   position: absolute;
   top: 60px;
   left: 20px;
   padding: 5px 10px;
-  background: white;
+  background: v-bind('secondary');
   display: flex;
   flex-direction: column;
   box-shadow: 0px 4px 4px rgb(0 0 0 / 25%);
@@ -764,7 +830,7 @@ textarea {
   display: grid;
   grid-template-columns: 170px auto;
   padding: 5px 0;
-  border-bottom: 1px solid #efefef;
+  border-bottom: 1px solid v-bind('border');
 }
 .shortcut:last-child {
   border-bottom: none;
@@ -844,7 +910,7 @@ textarea {
   width: 300px;
   appearance: none;
   height: 5px;
-  background: #333;
+  background: v-bind('primary2');
   /* box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.25); */
   border-radius: 16px;
   outline: none;
@@ -855,7 +921,7 @@ textarea {
   width: 20px;
   height: 20px;
   cursor: pointer;
-  background: #333;
+  background: v-bind('primary2');
   /* border: 1px solid #E0E0E0; */
   box-sizing: border-box;
   /* box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25); */
@@ -888,7 +954,7 @@ textarea {
   left: 0;
   width: 100%;
   height: 3px;
-  background: #333;
+  background: v-bind('primary2');
   /* opacity: 0.5; */
   z-index: 1;
 }
