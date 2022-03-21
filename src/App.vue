@@ -699,7 +699,7 @@ html, body {
 #app {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  /* gap: 14px; */
   max-width: 500px;
   height: 100%;
   justify-content: center;
@@ -711,6 +711,7 @@ textarea {
   font-size: 16px;
   font-family: 'Roboto', sans-serif;
   border: 1px solid #808080;
+  margin-bottom: 14px;
 }
 .output {
   line-height: 2;
