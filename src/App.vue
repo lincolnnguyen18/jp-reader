@@ -564,7 +564,7 @@ export default {
       }
       // escape
       if (e.key == "Escape") {
-        if (this.mode != "input" && this.languagesOpen) {
+        if (this.mode != "output" && this.languagesOpen) {
           this.languagesOpen = false;
           return;
         }
