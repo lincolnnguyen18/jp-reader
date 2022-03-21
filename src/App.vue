@@ -579,10 +579,10 @@ export default {
           this.$refs.play_auto.innerHTML = "play_circle";
           return
         }
-        if (this.darkModeOn) {
-          this.toggleDarkMode()
-        }
-        this.closeOutput();
+        // if (this.darkModeOn) {
+        //   this.toggleDarkMode()
+        // }
+        // this.closeOutput();
       }
       if ((e.key == " " || e.key == "k") && !this.loading) {
         if (this.mode != "output") return;
@@ -677,10 +677,10 @@ export default {
         <span class="key">Right bracket</span>
         <span class="description">Increase text to speech speed</span>
       </div>
-      <div class="shortcut">
+      <!-- <div class="shortcut">
         <span class="key">Escape</span>
         <span class="description">Close sentences</span>
-      </div>
+      </div> -->
       <div class="shortcut">
         <span class="key">D</span>
         <span class="description">Toggle dark mode on/off</span>
