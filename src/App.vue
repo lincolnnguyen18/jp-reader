@@ -564,7 +564,15 @@ export default {
       }
       // escape
       if (e.key == "Escape") {
+        if (this.mode != "input" && this.languagesOpen) {
+          this.languagesOpen = false;
+          return;
+        }
         if (this.mode != "output") return;
+        if (this.helpOpen) {
+          this.closeHelp();
+          return;
+        }
         if (speechSynthesis.speaking) {
           this.playingAuto = false
           speechSynthesis.cancel();
