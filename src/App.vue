@@ -291,6 +291,9 @@ export default {
       speechSynthesis.speak(u);
     },
     closeOutput() {
+      if (this.darkModeOn) {
+        this.toggleDarkMode()
+      }
       // this.japaneseText = "";
       this.mode = "input";
       this.currentLine = 0;
@@ -579,9 +582,6 @@ export default {
           this.$refs.play_auto.innerHTML = "play_circle";
           return
         }
-        // if (this.darkModeOn) {
-        //   this.toggleDarkMode()
-        // }
         // this.closeOutput();
       }
       if ((e.key == " " || e.key == "k") && !this.loading) {
