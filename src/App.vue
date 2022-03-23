@@ -77,7 +77,8 @@ export default {
       currentLanguage: "en-US",
       languagesOpen: false,
       sourceLanguage: null,
-      darkModeOn: false
+      darkModeOn: false,
+      wasDark: false
     }
   },
   // computed: {
@@ -291,6 +292,7 @@ export default {
       speechSynthesis.speak(u);
     },
     closeOutput() {
+      this.wasDark = this.darkModeOn
       if (this.darkModeOn) {
         this.toggleDarkMode()
       }
@@ -357,6 +359,12 @@ export default {
     async translate() {
       document.getElementById('app').style.justifyContent = "center"
       if (this.mode == 'input' && this.japaneseText) {
+        if (this.wasDark) {
+          this.darkModeOn = false
+          setTimeout(() => {
+            this.toggleDarkMode()
+          }, 1)
+        }
         this.loading = true
         this.mode = "output"
         let textToTranslate
