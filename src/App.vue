@@ -124,8 +124,14 @@ export default {
     changeSpeed() {
       // round this.speed to nearest tenth
       this.speed = Math.round(this.speed * 10) / 10
-      // console.log(this.speed)
-      this.restart()
+      console.log(speechSynthesis.speaking)
+      if (speechSynthesis.speaking) {
+        this.restarting = true
+        this.playingAuto = false
+        speechSynthesis.cancel()
+        this.playAuto()
+        this.restarting = false
+      }
     },
     restart: _.debounce(function () {
       if (speechSynthesis.speaking) {
