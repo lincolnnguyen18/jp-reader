@@ -378,6 +378,8 @@ export default {
           let period = "。"
           if (this.japaneseText.indexOf(period) == -1)
             period = "."
+          if (this.japaneseText.indexOf(period) == -1)
+            period = "\n"
           if (this.japaneseText.trim().length > 600) {
             let index = this.japaneseText.trim().indexOf(period, 600) + 1
             // console.log(this.japaneseText.trim())
@@ -398,6 +400,8 @@ export default {
           let period = "。"
           if (this.backupText.indexOf(period) == -1)
             period = "."
+          if (this.japaneseText.indexOf(period) == -1)
+            period = "\n"
           if (this.backupText.trim().length > 600) {
             let index = this.backupText.trim().indexOf(period, 600) + 1
             if (index == 0) {
@@ -487,6 +491,7 @@ export default {
       // remove hash tags from text
       // text = text.replace('#', '')
       // text = text.replace('&', '')
+      console.log(text)
       const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${this.currentLanguage}&dt=t&q=` + encodeURIComponent(text);
       const result = await fetch(url);
       const json = await result.json();
