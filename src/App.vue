@@ -97,6 +97,9 @@ export default {
   methods: {
     toggleDarkMode() {
       this.darkModeOn = !this.darkModeOn
+      this.setDarkMode()
+    },
+    setDarkMode() {
       if (this.darkModeOn) {
         this.$refs.dark_mode.classList.remove("material-icons-outlined")
         this.$refs.dark_mode.classList.add("material-icons-round")
@@ -175,6 +178,7 @@ export default {
         let flag = await this.translate()
         if (flag != -1) {
           this.currentLine = 0
+          this.setDarkMode()
           // this.updateCurrentLine()
         }
         if (this.playingAuto) {
