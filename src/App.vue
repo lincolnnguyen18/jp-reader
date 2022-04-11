@@ -665,6 +665,8 @@ export default {
   <div class="slidecontainer" v-if="mode != 'input'">
     <span class="material-icons-outlined speed">speed</span>
     <input type="range" min="0.5" max="3.6" class="slider" v-model="speed" @change="changeSpeed" step="0.1" ref="slider">
+    <!-- display speed to 1 decimal place -->
+    <span class="text">{{ speed.toFixed(1) }}</span>
   </div>
   <div class="help-stuff" v-clickOutside="closeHelp">
     <span class="material-icons-outlined question" @click="openHelp" v-if="mode != 'input'">help_outline</span>
@@ -935,6 +937,9 @@ textarea {
 .slidecontainer span {
   font-size: 30px;
   user-select: none;
+}
+.slidecontainer .text {
+  font-size: 20px;
 }
 .slidecontainer input {
   width: 300px;
