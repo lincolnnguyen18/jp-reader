@@ -171,14 +171,15 @@ export default {
         if (this.playingAuto) {
           this.playSentence();
         }
-      } else if (this.backupText != "" && !this.playingAuto) {
+      // } else if (this.backupText != "" && !this.playingAuto) {
+      } else if (this.backupText != "") {
         // this.$refs.loading_icon.classList.remove("hidden")
         this.mode = "input"
         let flag = await this.translate()
         if (flag != -1) {
           this.currentLine = 0
           this.setDarkMode()
-          // this.updateCurrentLine()
+          this.updateCurrentLine()
         }
         if (this.playingAuto) {
           setTimeout(() => {
@@ -986,5 +987,6 @@ textarea {
   background: v-bind('primary2');
   /* opacity: 0.5; */
   z-index: 1;
+  transition: width 0.1s ease;
 }
 </style>
