@@ -124,26 +124,43 @@ export default {
       }
     },
     changeSpeed() {
+      console.log(this.speed,typeof(this.speed))
+      // if (typeof(this.speed) == "string") {
+      //   this.speed = parseFloat(this.speed)
+      // }
       // round this.speed to nearest tenth
       this.speed = Math.round(this.speed * 10) / 10
-      console.log(speechSynthesis.speaking)
+      // console.log(speechSynthesis.speaking)
       if (speechSynthesis.speaking) {
-        this.restarting = true
         this.playingAuto = false
         speechSynthesis.cancel()
-        this.playAuto()
-        this.restarting = false
+        setTimeout(() => {
+          this.restarting = true
+          speechSynthesis.cancel()
+          this.playAuto()
+          this.restarting = false
+        }, 300)
       }
+      // setTimeout(() => {
+      //   console.log(speechSynthesis.speaking)
+      //   if (speechSynthesis.speaking) {
+      //     this.restarting = true
+      //     this.playingAuto = false
+      //     speechSynthesis.cancel()
+      //     this.playAuto()
+      //     this.restarting = false
+      //   }
+      // }, 3000)
     },
-    restart: _.debounce(function () {
-      if (speechSynthesis.speaking) {
-        this.restarting = true
-        this.playingAuto = false
-        speechSynthesis.cancel()
-        this.playAuto()
-        this.restarting = false
-      }
-    }, 500),
+    // restart: _.debounce(function () {
+    //   if (speechSynthesis.speaking) {
+    //     this.restarting = true
+    //     this.playingAuto = false
+    //     speechSynthesis.cancel()
+    //     this.playAuto()
+    //     this.restarting = false
+    //   }
+    // }, 500),
     playAuto() {
       if (!this.playingAuto) {
         this.playingAuto = true;
@@ -616,10 +633,16 @@ export default {
         this.toggleVisibility();
       }
       if (e.key == "[" && this.speed > 0.5 ) {
+        if (typeof this.speed != "number") {
+          this.speed = parseFloat(this.speed)
+        }
         this.speed -= 0.1;
         this.changeSpeed();
       }
-      if (e.key == "]" && this.speed < 3.6 ) {
+      if (e.key == "]" && this.speed < 2.0 ) {
+        if (typeof this.speed != "number") {
+          this.speed = parseFloat(this.speed)
+        }
         this.speed += 0.1;
         this.changeSpeed();
       }
@@ -664,9 +687,9 @@ export default {
   <span class="material-icons-outlined close" @click="closeOutput" v-if="mode != 'input'">close</span>
   <div class="slidecontainer" v-if="mode != 'input'">
     <span class="material-icons-outlined speed">speed</span>
-    <input type="range" min="0.5" max="3.6" class="slider" v-model="speed" @change="changeSpeed" step="0.1" ref="slider">
+    <input type="range" min="0.5" max="2.0" class="slider" v-model="speed" @change="changeSpeed" step="0.1" ref="slider">
     <!-- display speed to 1 decimal place -->
-    <span class="text">{{ speed.toFixed(1) }}</span>
+    <span class="text">{{ typeof(speed) == 'number' ? speed.toFixed(1) : parseFloat(speed).toFixed(1) }}</span>
   </div>
   <div class="help-stuff" v-clickOutside="closeHelp">
     <span class="material-icons-outlined question" @click="openHelp" v-if="mode != 'input'">help_outline</span>
