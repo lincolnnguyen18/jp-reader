@@ -162,7 +162,7 @@ export default {
       if (this.mode != "output") return;
       if (speechSynthesis.speaking) {
         speechSynthesis.cancel();
-        this.$refs.play_auto.innerHTML = "play_circle";
+        // this.$refs.play_auto.innerHTML = "play_circle";
         return
       }
       if (this.currentLine < this.japaneseText.length - 1) {
