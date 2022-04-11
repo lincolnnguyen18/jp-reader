@@ -242,7 +242,11 @@ export default {
       // console.log(this.currentLanguage, this.sourceLanguage)
       // console.log(sourceLang)
 
+      console.log(sourceLang)
+      let test = speechSynthesis.getVoices().filter(function (voice) { return voice.lang.split('-')[0] === 'de' && voice.voiceURI.includes('Google') })[0];
+      console.log(test);
       u.voice = speechSynthesis.getVoices().filter(function (voice) { return voice.lang.split('-')[0] === sourceLang && voice.voiceURI.includes('Google') })[0];
+      console.log(u.voice);
       if (sourceLang == 'en')
         sourceLang = 'en-US'
 
@@ -521,6 +525,7 @@ export default {
   },
   mounted() {
     window.u = new SpeechSynthesisUtterance();
+    let voices = speechSynthesis.getVoices()
     // update this.currentLanguage with saved cookie if it exists
     if (getCookie("language")) {
       this.currentLanguage = getCookie("language")
