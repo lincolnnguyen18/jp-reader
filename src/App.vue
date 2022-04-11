@@ -19,7 +19,6 @@ const getRawJapanese = (node) => {
   div.innerHTML = node.innerHTML.replace(/<rt.*?>.*?<\/rt>/ig,'');
   return div.innerText;
 }
-window.u = new SpeechSynthesisUtterance();
 const clickOutside = {
   mounted: (el, binding, vnode) => {
     el.clickOutsideEvent = (e) => {
@@ -243,13 +242,14 @@ export default {
       // console.log(this.currentLanguage, this.sourceLanguage)
       // console.log(sourceLang)
 
+      u.voice = speechSynthesis.getVoices().filter(function (voice) { return voice.lang.split('-')[0] === sourceLang && voice.voiceURI.includes('Google') })[0];
       if (sourceLang == 'en')
         sourceLang = 'en-US'
 
       if (!this.restarting)
         this.backup = this.$refs.output.innerHTML;
       // if (this.sourceLang == "ja") {
-        this.$refs.output.innerHTML = sentence;
+        // this.$refs.output.innerHTML = sentence;
         // console.log(this.$refs.output.innerHTML)
       // }
 
@@ -262,7 +262,7 @@ export default {
       }
 
       u.text = sentence;
-      u.lang = sourceLang;
+      // u.lang = sourceLang;
       // u.rate = 0.5;
       // u.rate = 3.6;
       u.rate = this.speed;
@@ -292,14 +292,12 @@ export default {
           }
         }, 100)
       }
-      // var u = new SpeechSynthesisUtterance();
-      // u.text = sentence;
-      // u.lang = 'ja';
-      // u.rate = 1.2;
+      // u.text = 'テスト';
+      // u.lang = 'ja-JP';
+      speechSynthesis.speak(u);
       // u.onboundary = function(event) {
       //   console.log(event)
       // }
-      speechSynthesis.speak(u);
     },
     closeOutput() {
       this.wasDark = this.darkModeOn
@@ -379,20 +377,16 @@ export default {
         this.mode = "output"
         let textToTranslate
         if (this.backupText == "") {
+          console.log('tefjio')
           let period = "。"
           if (this.japaneseText.indexOf(period) == -1)
             period = "."
           if (this.japaneseText.indexOf(period) == -1)
             period = "\n"
           if (this.japaneseText.trim().length > 600) {
-            let index = this.japaneseText.trim().indexOf(period, 600) + 1
-            // console.log(this.japaneseText.trim())
-            // console.log(this.japaneseText.trim().indexOf(period, 600))
+            let index = this.japaneseText.trim().lastIndexOf(period, 600) + 1
             if (index == 0) {
-              index = this.japaneseText.trim().lastIndexOf(period) + 1
-              if (index == 0) {
-                index = 600
-              }
+              index = 600
             }
             textToTranslate = this.japaneseText.trim().substring(0, index)
             this.backupText = this.japaneseText.trim().substring(index)
@@ -407,12 +401,9 @@ export default {
           if (this.japaneseText.indexOf(period) == -1)
             period = "\n"
           if (this.backupText.trim().length > 600) {
-            let index = this.backupText.trim().indexOf(period, 600) + 1
+            let index = this.backupText.trim().lastIndexOf(period, 600) + 1
             if (index == 0) {
-              index = this.backupText.trim().lastIndexOf(period) + 1
-              if (index == 0) {
-                index = 600
-              }
+              index = 600
             }
             textToTranslate = this.backupText.trim().substring(0, index)
             this.backupText = this.backupText.trim().substring(index)
@@ -529,6 +520,7 @@ export default {
     }
   },
   mounted() {
+    window.u = new SpeechSynthesisUtterance();
     // update this.currentLanguage with saved cookie if it exists
     if (getCookie("language")) {
       this.currentLanguage = getCookie("language")
